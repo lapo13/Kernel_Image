@@ -4,9 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/include/utils/**",
-                "${workspaceFolder}/include/core",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include/core"
             ],
             "defines": [],
             "cStandard": "c17",

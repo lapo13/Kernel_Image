@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(MioProgetto VERSION 1.0)
+project(Kernel_Image VERSION 1.0)
 
 # Specifica lo standard C++
 set(CMAKE_CXX_STANDARD 17)

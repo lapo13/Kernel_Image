@@ -1,19 +1,18 @@
-#include <array>
-#include <Image.h>
+#include "Image.h"
 
 template <typename PixelType, unsigned int NumChannels>
-std::array<Channel<PixelType>, NumChannels>& Image<PixelType, NumChannels>::getPixel(unsigned int x, unsigned int y) {
-    static std::array<Channel<PixelType>, NumChannels> pixel;
+std::array<typename Image<PixelType, NumChannels>::Channel, NumChannels>& Image<PixelType, NumChannels>::getPixel(unsigned int x, unsigned int y) {
+    static std::array<typename Image<PixelType, NumChannels>::Channel, NumChannels> pixel;
     for (unsigned int i = 0; i < NumChannels; ++i) {
-        pixel[i](0,0) = channels[i](y,x);
+        pixel[i](0, 0) = channels[i](y, x);
     }
-    return pixel; 
+    return pixel;
 }
 
 template <typename PixelType, unsigned int NumChannels>
 void Image<PixelType, NumChannels>::setPixel(unsigned int x, unsigned int y, const std::array<PixelType, NumChannels>& pixel) {
     for (unsigned int i = 0; i < NumChannels; ++i) {
-        channels[i](y,x) = pixel[i];
+        channels[i](y, x) = pixel[i];
     }
 }
 
@@ -32,3 +31,5 @@ void Image<PixelType, NumChannels>::fill(const std::array<PixelType, NumChannels
         channels[i].fill(pixel[i]);
     }
 }
+
+

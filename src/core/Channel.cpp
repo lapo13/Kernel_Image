@@ -1,48 +1,63 @@
 #include <Image.h>
 
-template <typename PixelType, unsigned int NumChannels>
-PixelType Image<PixelType, NumChannels>::Channel::getMin() const {
-    PixelType min = std::numeric_limits<PixelType>::max();
-    for (auto it = begin(); it != end(); ++it) {
-        if (*it < min) {
-            min = *it;
-        }
-    }
-    return min;
+Image::Channel::Channel(uint8_t* imgBuffer, int width, unsigned int height) : Matrix(height, width) {
+    MatFill(imgBuffer);
 };
 
-template <typename PixelType, unsigned int NumChannels>
-PixelType Image<PixelType, NumChannels>::Channel::getMax() const {
-    PixelType max = std::numeric_limits<PixelType>::min();
-    for (auto it = begin(); it != end(); ++it) {
-        if (*it > max) {
-            max = *it;
+uint8_t Image::Channel::getMin() const {
+    uint8_t min = std::numeric_limits<uint8_t>::max();
+    for(int i = 0; i < data->getRows(); ++i) {
+        for(int j = 0; j < data->getCols(); ++j) {
+            if((*data)(i, j) < min) {
+                min = (*data)(i, j);
+            }
         }
     }
-    return max;
+};
+    
+
+uint8_t Image::Channel::getMax() const {
+    uint8_t max = std::numeric_limits<uint8_t>::min();
+    for(int i = 0; i < data->getRows(); ++i) {
+        for(int j = 0; j < data->getCols(); ++j) {
+            if((*data)(i, j) > max) {
+                max = (*data)(i, j);
+            }
+        }
+    }
 };
 
-template <typename PixelType, unsigned int NumChannels>
-double Image<PixelType, NumChannels>::Channel::getMean() const {
+
+double Image::Channel::getMean() const {
     double sum = 0;
-    for (auto it = begin(); it != end(); ++it) {
-        sum += *it;
+    for(int i = 0; i < data->getRows(); ++i) {
+        for(int j = 0; j < data->getCols(); ++j) {
+            sum += (*data)(i, j);
+        }
     }
-    return sum / (data.getRows() * data.getCols());
+    return sum / (data->getRows() * data->getCols());
 };
 
-template <typename PixelType, unsigned int NumChannels>
-void Image<PixelType, NumChannels>::Channel::normalize(PixelType newMin, PixelType newMax) {
-    PixelType min = getMin();
-    PixelType max = getMax();
-    for (auto it = begin(); it != end(); ++it) {
-        *it = newMin + (*it - min) * (newMax - newMin) / (max - min);
+
+void Image::Channel::normalize(uint8_t newMin, uint8_t newMax) {
+    uint8_t min = getMin();
+    uint8_t max = getMax();
+    for(int i = 0; i < data->getRows(); ++i) {
+        for(int j = 0; j < data->getCols(); ++j) {
+            (*data)(i, j) = (newMax - newMin) * ((*data)(i, j) - min) / (max - min) + newMin;
+        }
     }
 };
 
-template <typename PixelType, unsigned int NumChannels>
-void Image<PixelType, NumChannels>::Channel::threshold(PixelType threshold, PixelType lowValue, PixelType highValue) {
-    for (auto it = begin(); it != end(); ++it) {
-        *it = (*it > threshold) ? highValue : lowValue;
+
+void Image::Channel::threshold(uint8_t threshold, uint8_t lowValue, uint8_t highValue) {
+    for(int i = 0; i < data->getRows(); ++i) {
+        for(int j = 0; j < data->getCols(); ++j) {
+            if((*data)(i, j) < threshold) {
+                (*data)(i, j) = lowValue;
+            } else {
+                (*data)(i, j) = highValue;
+            }
+        }
     }
 };

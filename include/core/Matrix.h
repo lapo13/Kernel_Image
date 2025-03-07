@@ -1,22 +1,18 @@
-#include <stdlib.h>
+#include <vector>
 
-template <typename T>
 class Matrix {
 
 private:
-     std::vector<T> data;
+     std::vector<uint8_t> data;
      int rows, cols;
 
 public:
-     Matrix(int rows, int cols) : rows(rows), cols(cols) {
-          data.resize(rows * cols);
-     }
+     Matrix(int rows, int cols);
 
-     T& operator()(int i, int j) {
+     uint8_t& operator()(int i, int j) {
           return data[i * cols + j];
      }
-
-     const T& operator()(int i, int j) const {
+     const uint8_t& operator()(int i, int j) const {
           return data[i * cols + j];
      }
 
@@ -28,23 +24,10 @@ public:
           return cols;
      }
 
-     typename std::vector<T>::iterator begin() {
-          return data.begin();
-     }
-
-     typename std::vector<T>::iterator end() {
-          return data.end();
-     }
-
-     typename std::vector<T>::const_iterator begin() const {
-          return data.begin();
-     }
-
-     typename std::vector<T>::const_iterator end() const {
-          return data.end();
-     }
-
-     void MatFill(T value);
+     void MatFill(uint8_t* buffer);
      void MatResize(int rows, int cols);
 
+     ~Matrix() {
+          data.clear();
+     }
 };

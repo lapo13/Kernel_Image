@@ -1,61 +1,51 @@
 #include "Matrix.h"
-#include <array>
 
-
-template <typename PixelType, unsigned int NumChannels>
 class Image {
 
-private:
-     std::array<Channel> channels;
-     unsigned int width, height;
-
 protected:
-     class Channel : public Matrix<PixelType> {
+     class Channel : public Matrix {
           private:
-               unsigned int width, height;
-               Matrix<PixelType> data;
+               Matrix* data = nullptr;
 
           public:
-               Channel(PixelType ImageChannel, int width, unsigned int height) : width(width), height(height), data(width, height) {
-                    for (unsigned int i = 0; i < width; ++i) {
-                         for (unsigned int j = 0; j < height; ++j) {
-                              data(i, j) = ImageChannel;
-                         }
-                    }
-               };
-               PixelType getMin() const;
-               PixelType getMax() const;
+               Channel(uint8_t* imgBuffer, int width, unsigned int height);
+
+               uint8_t getMin() const;
+               uint8_t getMax() const;
                double getMean() const;
 
-               void normalize(PixelType newMin, PixelType newMax);
-               void threshold(PixelType threshold, PixelType lowValue, PixelType highValue);
+               void normalize(uint8_t newMin, uint8_t newMax);
+               void threshold(uint8_t threshold, uint8_t lowValue, uint8_t highValue);
 
-               iterator begin() {
-                    return data.begin();
+               ~Channel() {
+                    delete data;
                }
-               iterator end() {
-                    return data.end();
-               }
+
      };
+
+private:
+     int width, height, NumChannels;
+     std::vector<Channel*> channels;
 
 public:
 
-     Image(const Image<PixelType, NumChannels>& img) : width(img.width), height(img.height) {
+     Image(uint8_t* imgBuffer, int width, int NumChannels, int height) : width(width), height(height), NumChannels(NumChannels) {
           for (unsigned int i = 0; i < NumChannels; ++i) {
-               channels[i] = new Channel(img.channel, img.width, img.height);
+               channels.push_back(new Channel(imgBuffer, width, height));
           }
      }
 
-     Channel& getChannel(unsigned int channel) {
-          return channels[channel];
-     }
-     const Channel& getChannel(unsigned int channel) const {
+     Channel* getChannel(unsigned int channel) {
           return channels[channel];
      }
 
-     std::array<Channel, NumChannels>& getPixel(unsigned int x, unsigned int y);
+     const Channel* getChannel(unsigned int channel) const {
+          return channels[channel];
+     }
 
-     void setPixel(unsigned int x, unsigned int y, const std::array<PixelType, NumChannels>& pixel);
+     uint8_t* getPixel(unsigned int x, unsigned int y);
+
+     void setPixel(unsigned int x, unsigned int y, const uint8_t* pixel);
 
      unsigned int getWidth() const {
           return width;
@@ -70,6 +60,10 @@ public:
      }
 
      void resize(unsigned int width, unsigned int height);
-     void fill(const std::array<PixelType, NumChannels>& pixel);
 
+     ~Image() {
+          for (unsigned int i = 0; i < NumChannels; ++i) {
+               delete channels[i];
+          }
+     }
 };

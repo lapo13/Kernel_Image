@@ -12,6 +12,8 @@ elseif(MSVC)
     add_compile_options(/W4)
 endif()
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Aggiungi la directory include
 include_directories(${PROJECT_SOURCE_DIR}/include)
 

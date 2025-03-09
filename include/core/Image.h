@@ -4,22 +4,27 @@ class Image {
 
 protected:
      class Channel : public Matrix {
-          private:
-               Matrix* data = nullptr;
+     private:
+          uint8_t min, max;
 
-          public:
-               Channel(uint8_t* imgBuffer, int width, unsigned int height);
+     public:
+          Channel(uint8_t* imgBuffer, int width, unsigned int height);
+          
+          uint8_t getMin() const;
+          uint8_t getMax() const;
+          void setMin(uint8_t min){
+               this->min = min;
+          }
+          void setMax(uint8_t max){
+               this->max = max;
+          }
+          
+          double getMean() const;
 
-               uint8_t getMin() const;
-               uint8_t getMax() const;
-               double getMean() const;
+          void normalize(uint8_t newMin, uint8_t newMax);
+          void threshold(uint8_t threshold, uint8_t lowValue, uint8_t highValue);
 
-               void normalize(uint8_t newMin, uint8_t newMax);
-               void threshold(uint8_t threshold, uint8_t lowValue, uint8_t highValue);
-
-               ~Channel() {
-                    delete data;
-               }
+          ~Channel();
 
      };
 

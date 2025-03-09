@@ -40,7 +40,7 @@ public:
           }
      }
 
-     Channel* getChannel(unsigned int channel) {
+     Channel* getChannel(int channel) {
           return channels[channel];
      }
 
@@ -52,15 +52,15 @@ public:
 
      void setPixel(unsigned int x, unsigned int y, const uint8_t* pixel);
 
-     unsigned int getWidth() const {
+     int getWidth() const {
           return width;
      }
 
-     unsigned int getHeight() const {
+     int getHeight() const {
           return height;
      }
 
-     unsigned int getNumChannels() const {
+     int getNumChannels() const {
           return NumChannels;
      }
 

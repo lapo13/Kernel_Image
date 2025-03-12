@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include/core",
-                "${workspaceFolder}/include/utils"
+                "${workspaceFolder}/include/utils",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "cStandard": "c17",

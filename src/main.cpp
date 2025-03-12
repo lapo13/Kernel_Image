@@ -1,5 +1,5 @@
-#include <Image.h>
-#include <ImageIO.h>
+#include "core/Image.h"
+#include "utils/ImageIO.h"
 #include <iostream>
 
 void main() {
@@ -16,4 +16,4 @@ void main() {
      std::cout<<img->getChannel(0)->getMax()<<std::endl;
      std::cout<<img->getChannel(0)->getMean()<<std::endl;
      img->getChannel(0)->threshold(128,0,255);
-}
+};

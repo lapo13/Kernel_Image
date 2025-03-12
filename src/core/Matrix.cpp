@@ -1,10 +1,10 @@
-#include <Matrix.h>
+#include "core/Matrix.h"
 
 Matrix::Matrix(int rows, int cols) : rows(rows), cols(cols) {
     data.resize(rows * cols);
 }
 
-void Matrix::MatFill(uint8_t* buffer) {
+void Matrix::MatFill(unsigned char* buffer) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             data[i * cols + j] = buffer[i * cols + j];

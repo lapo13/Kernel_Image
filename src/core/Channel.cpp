@@ -1,11 +1,11 @@
 #include <Image.h>
 
-Image::Channel::Channel(uint8_t* imgBuffer, int width, unsigned int height) : Matrix(height, width) {
+Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): Matrix(height, width) {
     MatFill(imgBuffer);
 };
 
-uint8_t Image::Channel::getMin() const {
-    uint8_t min = std::numeric_limits<uint8_t>::max();
+unsigned char Image::Channel::getMin() const {
+    unsigned char min = std::numeric_limits<unsigned char>::max();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(i, j) < min) {
@@ -13,11 +13,12 @@ uint8_t Image::Channel::getMin() const {
             }
         }
     }
+    return min;
 };
     
 
-uint8_t Image::Channel::getMax() const {
-    uint8_t max = std::numeric_limits<uint8_t>::min();
+unsigned char Image::Channel::getMax() const {
+    unsigned char max = std::numeric_limits<unsigned char>::min();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(i, j) > max) {
@@ -25,6 +26,7 @@ uint8_t Image::Channel::getMax() const {
             }
         }
     }
+    return max;
 };
 
 
@@ -32,16 +34,16 @@ double Image::Channel::getMean() const {
     double sum = 0;
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
-            sum += (*this)(i, j);
+            sum += (double)(*this)(i, j);
         }
     }
     return sum / (this->getRows() * this->getCols());
 };
 
 
-void Image::Channel::normalize(uint8_t newMin, uint8_t newMax) {
-    uint8_t min = getMin();
-    uint8_t max = getMax();
+void Image::Channel::normalize(unsigned char newMin, unsigned char newMax) {
+    unsigned char min = getMin();
+    unsigned char max = getMax();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             (*this)(i, j) = (newMax - newMin) * ((*this)(i, j) - min) / (max - min) + newMin;
@@ -52,7 +54,7 @@ void Image::Channel::normalize(uint8_t newMin, uint8_t newMax) {
 };
 
 
-void Image::Channel::threshold(uint8_t threshold, uint8_t lowValue, uint8_t highValue) {
+void Image::Channel::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(i, j) < threshold) {

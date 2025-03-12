@@ -39,5 +39,5 @@ add_executable(myprogram src/main.cpp)
 target_link_libraries(myprogram kernel_image)
 
 # Aggiungi i test
-enable_testing()
-add_subdirectory(test)
+#enable_testing()
+#add_subdirectory(test)

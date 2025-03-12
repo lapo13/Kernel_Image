@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(myprogram main.cpp)
 
 # Define include directories (relative to the project root)
-target_include_directories(myprogram PUBLIC
+target_include_directories(myprogram PRIVATE
     ${PROJECT_SOURCE_DIR}/include/core
     ${PROJECT_SOURCE_DIR}/include/utils
 )

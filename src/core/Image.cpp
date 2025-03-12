@@ -1,14 +1,14 @@
-#include "Image.h"
+#include "core/Image.h"
 
-uint8_t* Image::getPixel(unsigned int x, unsigned int y) {
-    uint8_t* pixel = new uint8_t[NumChannels];
+unsigned char* Image::getPixel(unsigned int x, unsigned int y) {
+    unsigned char* pixel = new unsigned char[NumChannels];
     for (unsigned int i = 0; i < NumChannels; ++i) {
         pixel[i] = (*channels[i])(y, x);
     }
     return pixel;
 }
 
-void Image::setPixel(unsigned int x, unsigned int y, const uint8_t* pixel) {
+void Image::setPixel(unsigned int x, unsigned int y, const unsigned char* pixel) {
     for (unsigned int i = 0; i < NumChannels; ++i) {
         (*channels[i])(y, x) = pixel[i];
     }

@@ -8,9 +8,10 @@ protected:
     class Channel : public Matrix {
     private:
         unsigned char min, max;
+        int channel_num;   
 
     public:
-        Channel(unsigned char *imgBuffer, int width, int height);
+        Channel(unsigned char *imgBuffer, int width, int height, int channel_num);
 
         unsigned char getMin() const;
         unsigned char getMax() const;
@@ -31,12 +32,15 @@ protected:
 
 private:
     int width, height, NumChannels;
+    unsigned char max;
+    std::string MagicNumber;
     std::vector<Channel*> channels;
 
 public:
-    Image(unsigned char* imgBuffer, int width, int NumChannels, int height) : width(width), height(height), NumChannels(NumChannels) {
+    Image(unsigned char* imgBuffer, int width, int NumChannels, int height, std::string magicnumber, unsigned char max) :
+     width(width), height(height), NumChannels(NumChannels), MagicNumber(magicnumber), max(max) {
         for (int i = 0; i < NumChannels; ++i) {
-            channels.push_back(new Channel(imgBuffer, width, height));
+            channels.push_back(new Channel(imgBuffer, width, height, i));
         }
     }
 
@@ -62,6 +66,14 @@ public:
 
     int getNumChannels() const {
         return NumChannels;
+    }
+
+    std::string getMagicNumber() const {
+        return MagicNumber;
+    }
+
+    int getMax() const {
+        return (int)max;
     }
 
     void resize(unsigned int width, unsigned int height);

@@ -1,8 +1,13 @@
 #include "core/Image.h"
 #include <iostream>
 
-Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): Matrix(height, width) {
-    MatFill(imgBuffer);
+Image::Channel::Channel(unsigned char* imgBuffer, int width, int height, int channel_num): 
+Matrix(height, width), channel_num(channel_num) {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            (*this)(i, j) = imgBuffer[(i * width + j) * 3 + channel_num];
+        }
+    }
 };
 
 unsigned char Image::Channel::getMin() const {

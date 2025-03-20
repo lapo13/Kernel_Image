@@ -8,8 +8,8 @@ class ImageIO {
 private:
     ImageIO() = delete;
 public:
-    static void saveImage(const std::string& filename, const Image& image);
     static Image* loadImage(const std::string& filename);
+    static void saveImage(const std::string &filename, Image& image);
 };
 
 #endif // IMAGEIO_H

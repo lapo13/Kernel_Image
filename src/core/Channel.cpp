@@ -1,4 +1,5 @@
-#include <Image.h>
+#include "core/Image.h"
+#include <iostream>
 
 Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): Matrix(height, width) {
     MatFill(imgBuffer);

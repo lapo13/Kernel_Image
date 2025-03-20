@@ -14,11 +14,11 @@ protected:
 
         unsigned char getMin() const;
         unsigned char getMax() const;
-        void setMin(unsigned char min) {
-            this->min = min;
+        void setMin(unsigned char Min) {
+            this->min = Min;
         }
-        void setMax(unsigned char max) {
-            this->max = max;
+        void setMax(unsigned char Max) {
+            this->max = Max;
         }
 
         double getMean() const;
@@ -26,7 +26,7 @@ protected:
         void normalize(unsigned char newMin, unsigned char newMax);
         void threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue);
 
-        ~Channel();
+        ~Channel() = default;
     };
 
 private:

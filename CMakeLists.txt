@@ -1,43 +1,42 @@
 cmake_minimum_required(VERSION 3.10)
-project(Kernel_Image VERSION 1.0)
+project(Kernel_Image)
 
-# Specifica lo standard C++
+# Imposta standard C++ e opzioni
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Opzioni di compilazione
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic)
-elseif(MSVC)
-    add_compile_options(/W4)
-endif()
+# Imposta dei nominativi per i file sorgente e header
+set (SOURCE 
+    src/core/Image.cpp
+    src/core/Matrix.cpp
+    src/core/Channel.cpp
+    src/utils/ImageIO.cpp
+    )
 
-set(CMAKE_BUILD_TYPE Debug)
+set(HEADER
+    include/core/Image.h
+    include/core/Matrix.h
+    include/utils/ImageIO.h
+)
 
-# Aggiungi la directory include
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# Create a library for the core code
+# Crea la libreria kernel_image
 add_library(kernel_image
-    src/core/Image.cpp
-    src/core/Matrix.cpp
-    src/utils/ImageIO.cpp
+        ${SOURCE}
+        ${HEADER}
 )
 
-# Group source files for better organization
-source_group(Core FILES
-    src/core/Image.cpp
-    src/core/Matrix.cpp
+target_include_directories(kernel_image PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
 )
 
-source_group(Utils FILES
-    src/utils/ImageIO.cpp
-)
-
-# Link the library to the executable
+# Eseguibile principale
 add_executable(myprogram src/main.cpp)
-target_link_libraries(myprogram kernel_image)
+target_link_libraries(myprogram PRIVATE kernel_image)
+target_include_directories(myprogram PRIVATE
+        ${PROJECT_SOURCE_DIR}/include)
 
-# Aggiungi i test
-#enable_testing()
-#add_subdirectory(test)
+# ======= SEZIONE TEST =======
+#enable_testing()  # Abilita CTest
+
+# Aggiungi la sottodirectory dei test (dopo kernel_image!)
+#add_subdirectory(tests)

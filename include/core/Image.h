@@ -52,7 +52,7 @@ public:
         return channels[channel];
     }
 
-    unsigned char* getPixel(unsigned int x, unsigned int y);
+    const unsigned char* getPixel(unsigned int x, unsigned int y);
 
     void setPixel(unsigned int x, unsigned int y, const unsigned char* pixel);
 

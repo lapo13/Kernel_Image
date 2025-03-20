@@ -1,9 +1,9 @@
 #include "core/Image.h"
 
-unsigned char* Image::getPixel(unsigned int x, unsigned int y) {
+const unsigned char* Image::getPixel(unsigned int x, unsigned int y) {
     unsigned char* pixel = new unsigned char[NumChannels];
     for (int i = 0; i < NumChannels; ++i) {
-        pixel[i] = (*channels[i])(y, x);
+        pixel[i] = (*channels[i])(x, y);
     }
     return pixel;
 }

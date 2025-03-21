@@ -67,42 +67,35 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
     file << image.getWidth() << " " << image.getHeight() << "\n";
     file << image.getMax() << "\n";
 
-    // Calculate correct buffer size based on format
-    const size_t pixelCount = image.getWidth() * image.getHeight();
-    const size_t bufferSize = pixelCount * (image.getMagicNumber()[1] == '5' ? 1 : 3);
+    // allocate buffer
+    const size_t bufferSize = image.getWidth() * image.getHeight() * image.getNumChannels();
     unsigned char* buffer = new unsigned char[bufferSize];
     size_t idx = 0;
 
-    switch(image.getMagicNumber()[1]) {  
-        case '5':  // Grayscale
-            std::cout << "Saving grayscale image" << std::endl;
-            for(int x = 0; x < image.getWidth(); x++) {  // Switch x and y loops
-                for(int y = 0; y < image.getHeight(); y++) {
-                    unsigned char* pixel = image.getPixel(x, y);
-                    buffer[idx++] = pixel[0];
-                    delete[] pixel;
+    if(image.getMagicNumber() == "P5") {
+        for (int i = 0; i < image.getHeight(); ++i) {
+            for (int j = 0; j < image.getWidth(); ++j) {
+                std::vector<unsigned char> pixel = image.getPixel(j, i);
+                buffer[idx++] = pixel[0];
+            }
+        }
+    } 
+    
+    else if(image.getMagicNumber() == "P6") {
+        for (int i = 0; i < image.getHeight(); ++i) {
+            for (int j = 0; j < image.getWidth(); ++j) {
+                std::vector<unsigned char> pixel = image.getPixel(j, i);
+                for (int k = 0; k < image.getNumChannels(); ++k) {
+                    buffer[idx++] = pixel[k];
                 }
             }
-            break;
-            
-        case '6':  // RGB
-            std::cout << "Saving RGB image" << std::endl;
-            for(int x = 0; x < image.getWidth(); x++) {  // Switch x and y loops
-                for(int y = 0; y < image.getHeight(); y++) {
-                    unsigned char* pixel = image.getPixel(x, y);
-                    for(int c = 0; c < 3; c++) {  // Always 3 for RGB
-                        buffer[idx++] = pixel[c];
-                    }
-                    delete[] pixel;
-                }
-            }
-            break;
+        }
 
-        default:
-            std::cerr << "Error: Unsupported image format: " << image.getMagicNumber() << std::endl;
-            delete[] buffer;
-            file.close();
-            return;
+    } else {
+        std::cerr << "Error: Invalid magic number " << image.getMagicNumber() << std::endl;
+        delete[] buffer;
+        file.close();
+        return;
     }
 
     // Write exactly bufferSize bytes

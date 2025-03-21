@@ -1,16 +1,16 @@
 #include "core/Image.h"
 
-const unsigned char* Image::getPixel(unsigned int x, unsigned int y) {
-    unsigned char* pixel = new unsigned char[NumChannels];
+const std::vector<unsigned char> Image::getPixel(unsigned int x, unsigned int y) {
+    std::vector<unsigned char> pixel(NumChannels);
     for (int i = 0; i < NumChannels; ++i) {
-        pixel[i] = (*channels[i])(x, y);
+        pixel[i] = Image::getChannel(i)->operator()(y, x);
     }
     return pixel;
 }
 
 void Image::setPixel(unsigned int x, unsigned int y, const unsigned char* pixel) {
     for (int i = 0; i < NumChannels; ++i) {
-        (*channels[i])(y, x) = pixel[i];
+        Image::getChannel(i) -> operator()(x, y) = pixel[i];
     }
 }
 

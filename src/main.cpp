@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main() {
-    Image* img = ImageIO::loadImage(R"(/Users/lapotinacci/Documents/images/sample_640×426.ppm)");
+    Image* img = ImageIO::loadImage(R"(/Users/lapotinacci/Documents/images/sample_640×426.pgm)");
 
     if (img == NULL) {
         std::cerr << "Error: Could not load image" << std::endl;
@@ -22,7 +22,7 @@ int main() {
     //std::cout<<img->getChannel(0)->getMean()<<std::endl;
     //img->getChannel(0)->threshold(128,0,255);
 
-    ImageIO::saveImage(R"(/Users/lapotinacci/Documents/images/sample_640×426_out.ppm)", *img);
+    ImageIO::saveImage(R"(/Users/lapotinacci/Documents/images/sample_640×426_out.pgm)", *img);
 
     delete img;
     return 0;

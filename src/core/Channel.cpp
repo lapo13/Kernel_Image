@@ -1,24 +1,23 @@
 #include "core/Image.h"
-#include <iostream>
 
 Image::Channel::Channel(unsigned char* imgBuffer, int width, int height, int channel_num): 
-Matrix(width, height), channel_num(channel_num) {
+Matrix(height, width), channel_num(channel_num) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
             size_t idx = (i * width + j) * 3 + channel_num;
-            (*this)(i, j) = imgBuffer[idx];
+            (*this)(j, i) = imgBuffer[idx];  // Nota: j e i invertiti
         }
     }
-};
+}
 
 Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): 
-Matrix(width, height) {
+Matrix(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
-            (*this)(i, j) = imgBuffer[i * width + j];
+            (*this)(j, i) = imgBuffer[i * width + j];  // Nota: j e i invertiti
         }
     }
-};
+}
 
 unsigned char Image::Channel::getMin() const {
     unsigned char min = std::numeric_limits<unsigned char>::max();

@@ -12,21 +12,19 @@ public:
     Matrix(int rows, int cols);
 
     unsigned char& operator()(int i, int j) {
-        return data[j * rows + i];
+        return data[i* rows + j]; 
     }
     const unsigned char& operator()(int i, int j) const {
-        return data[j * rows + i];
+        return data[i* rows + j]; 
     }
 
     int getRows() const {
         return rows;
     }
-
     int getCols() const {
         return cols;
     }
 
-    void MatFill(unsigned char* buffer);
     void MatResize(int rows, int cols);
 
     ~Matrix() {

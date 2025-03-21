@@ -15,7 +15,7 @@ width(width), height(height), NumChannels(NumChannels), MagicNumber(magicnumber)
 const std::vector<unsigned char> Image::getPixel(unsigned int x, unsigned int y) {
     std::vector<unsigned char> pixel(NumChannels);
     for (int i = 0; i < NumChannels; ++i) {
-        pixel[i] = Image::getChannel(i)->operator()(y, x);
+        pixel[i] = Image::getChannel(i)->operator()(x, y);
     }
     return pixel;
 }

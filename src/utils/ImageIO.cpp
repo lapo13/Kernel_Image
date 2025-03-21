@@ -70,27 +70,51 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
     // allocate buffer
     const size_t bufferSize = image.getWidth() * image.getHeight() * image.getNumChannels();
     unsigned char* buffer = new unsigned char[bufferSize];
-    size_t idx = 0;
 
     if(image.getMagicNumber() == "P5") {
-        for (int i = 0; i < image.getHeight(); ++i) {
-            for (int j = 0; j < image.getWidth(); ++j) {
-                std::vector<unsigned char> pixel = image.getPixel(j, i);
+        size_t idx = 0;
+        if (image.getNumChannels() != 1) {
+            std::cerr << "Error: P5 format requires 1 channel" << std::endl;
+            delete[] buffer;
+            file.close();
+            return;
+        }
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
+                std::vector<unsigned char> pixel = image.getPixel(x, y);
+                if (pixel.size() != 1) {
+                    std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
+                    delete[] buffer;
+                    file.close();
+                    return;
+                }
                 buffer[idx++] = pixel[0];
             }
         }
     } 
     
     else if(image.getMagicNumber() == "P6") {
-        for (int i = 0; i < image.getHeight(); ++i) {
-            for (int j = 0; j < image.getWidth(); ++j) {
-                std::vector<unsigned char> pixel = image.getPixel(j, i);
-                for (int k = 0; k < image.getNumChannels(); ++k) {
-                    buffer[idx++] = pixel[k];
+        size_t idx = 0;
+        if (image.getNumChannels() != 3) {
+            std::cerr << "Error: P6 format requires 3 channels" << std::endl;
+            delete[] buffer;
+            file.close();
+            return;
+        }
+        for (int y = 0; y < image.getHeight(); ++y) {
+            for (int x = 0; x < image.getWidth(); ++x) {
+                std::vector<unsigned char> pixel = image.getPixel(x, y);
+                if (pixel.size() != 3) {
+                    std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
+                    delete[] buffer;
+                    file.close();
+                    return;
                 }
+                buffer[idx++] = pixel[0];
+                buffer[idx++] = pixel[1];
+                buffer[idx++] = pixel[2];
             }
         }
-
     } else {
         std::cerr << "Error: Invalid magic number " << image.getMagicNumber() << std::endl;
         delete[] buffer;

@@ -51,27 +51,27 @@ public:
         return channels[channel];
     }
 
-    const std::vector<unsigned char> getPixel(unsigned int x, unsigned int y);
-
     void setPixel(unsigned int x, unsigned int y, const unsigned char* pixel);
 
-    int getWidth() const {
+    const std::vector<unsigned char> getPixel(unsigned int x, unsigned int y);
+
+    const int getWidth() const {
         return width;
     }
 
-    int getHeight() const {
+    const int getHeight() const {
         return height;
     }
 
-    int getNumChannels() const {
+    const int getNumChannels() const {
         return NumChannels;
     }
 
-    std::string getMagicNumber() const {
+    const std::string getMagicNumber() const {
         return MagicNumber;
     }
 
-    int getMax() const {
+    const int getMax() const {
         return (int)max;
     }
 

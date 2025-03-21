@@ -2,10 +2,20 @@
 #include <iostream>
 
 Image::Channel::Channel(unsigned char* imgBuffer, int width, int height, int channel_num): 
-Matrix(height, width), channel_num(channel_num) {
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            (*this)(i, j) = imgBuffer[(i * width + j) * 3 + channel_num];
+Matrix(width, height), channel_num(channel_num) {
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            size_t idx = (i * width + j) * 3 + channel_num;
+            (*this)(i, j) = imgBuffer[idx];
+        }
+    }
+};
+
+Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): 
+Matrix(width, height) {
+    for(int i = 0; i < height; ++i) {
+        for(int j = 0; j < width; ++j) {
+            (*this)(i, j) = imgBuffer[i * width + j];
         }
     }
 };

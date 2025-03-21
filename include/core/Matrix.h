@@ -12,10 +12,10 @@ public:
     Matrix(int rows, int cols);
 
     unsigned char& operator()(int i, int j) {
-        return data[i * cols + j];
+        return data[j * rows + i];
     }
     const unsigned char& operator()(int i, int j) const {
-        return data[i * cols + j];
+        return data[j * rows + i];
     }
 
     int getRows() const {

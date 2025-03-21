@@ -1,6 +1,9 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 #include "Matrix.h"
+#include <vector>
+#include <string>
+#include <iostream>
 
 class Image {
 
@@ -12,6 +15,7 @@ protected:
 
     public:
         Channel(unsigned char *imgBuffer, int width, int height, int channel_num);
+        Channel(unsigned char *imgBuffer, int width, int height);
 
         unsigned char getMin() const;
         unsigned char getMax() const;
@@ -37,12 +41,7 @@ private:
     std::vector<Channel*> channels;
 
 public:
-    Image(unsigned char* imgBuffer, int width, int NumChannels, int height, std::string magicnumber, unsigned char max) :
-     width(width), height(height), NumChannels(NumChannels), MagicNumber(magicnumber), max(max) {
-        for (int i = 0; i < NumChannels; ++i) {
-            channels.push_back(new Channel(imgBuffer, width, height, i));
-        }
-    }
+    Image(unsigned char* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, unsigned char max);
 
     Channel* getChannel(int channel) {
         return channels[channel];

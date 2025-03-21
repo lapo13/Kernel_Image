@@ -48,7 +48,7 @@ Image* ImageIO::loadImage(const std::string& filename) {
 
     file.close();
     
-    Image* img = new Image(imgBuffer, width, NumChannels, height, magicNumber, maxVal);
+    Image* img = new Image(imgBuffer, width, height, NumChannels, magicNumber, maxVal);
     delete[] imgBuffer;  
     
     return img;

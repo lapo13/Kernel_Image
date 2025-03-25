@@ -1,7 +1,7 @@
 #include "core/Image.h"
 
 Image::Image(unsigned char* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, unsigned char max):
-width(width), height(height), NumChannels(NumChannels), MagicNumber(magicnumber), max(max) {
+width(width), height(height), NumChannels(NumChannels), max(max), MagicNumber(magicnumber) {
     if (NumChannels == 1) {
         channels.push_back(new Channel(imgBuffer, width, height));
     } else {

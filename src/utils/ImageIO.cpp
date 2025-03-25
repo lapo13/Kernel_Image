@@ -38,7 +38,7 @@ Image* ImageIO::loadImage(const std::string& filename) {
 
     
     file.read(reinterpret_cast<char*>(imgBuffer), bufferSize);
-    if (file.gcount() != bufferSize) {
+    if (file.gcount() != (long) bufferSize) {
         std::cerr << "Error: Could not read complete image data. Expected " 
                   << bufferSize << " bytes but got " << file.gcount() << std::endl;
         delete[] imgBuffer;

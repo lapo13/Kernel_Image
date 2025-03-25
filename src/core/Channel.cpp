@@ -1,7 +1,7 @@
 #include "core/Image.h"
 
 Image::Channel::Channel(unsigned char* imgBuffer, int width, int height, int channel_num): 
-Matrix(height, width), channel_num(channel_num) {  // Nota: height e width invertiti
+Matrix(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
             size_t idx = (i * width + j) * 3 + channel_num;

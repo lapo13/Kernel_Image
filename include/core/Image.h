@@ -10,8 +10,7 @@ class Image {
 protected:
     class Channel : public Matrix {
     private:
-        unsigned char min, max;
-        int channel_num;   
+        unsigned char min, max;   
 
     public:
         Channel(unsigned char *imgBuffer, int width, int height, int channel_num);
@@ -55,15 +54,15 @@ public:
 
     const std::vector<unsigned char> getPixel(unsigned int x, unsigned int y);
 
-    const int getWidth() const {
+    int getWidth() const {
         return width;
     }
 
-    const int getHeight() const {
+    int getHeight() const {
         return height;
     }
 
-    const int getNumChannels() const {
+    int getNumChannels() const {
         return NumChannels;
     }
 
@@ -71,7 +70,7 @@ public:
         return MagicNumber;
     }
 
-    const int getMax() const {
+    int getMax() const {
         return (int)max;
     }
 

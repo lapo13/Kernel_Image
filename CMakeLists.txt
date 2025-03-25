@@ -5,6 +5,13 @@ project(Kernel_Image)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Imposta le opzioni di compilazione
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
+
+# Imposta i sanitizers
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address,undefined -fno-omit-frame-pointer")
+set(CMAKE_LINKER_FLAGS_DEBUG "-fsanitize=address,undefined")
+
 # Imposta dei nominativi per i file sorgente e header
 set (SOURCE 
     src/core/Image.cpp

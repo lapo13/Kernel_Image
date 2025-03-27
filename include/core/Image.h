@@ -49,31 +49,25 @@ public:
     Channel* getChannel(int channel) {
         return channels[channel];
     }
-
     const Channel* getChannel(T channel) const {
         return channels[channel];
     }
 
     void setPixel(unsigned int x, unsigned int y, const T* pixel);
-
     const std::vector<T> getPixel(unsigned int x, unsigned int y);
 
     int getWidth() const {
         return width;
     }
-
     int getHeight() const {
         return height;
     }
-
     int getNumChannels() const {
         return NumChannels;
     }
-
     const std::string getMagicNumber() const {
         return MagicNumber;
     }
-
     int getMax() const {
         return (int)max;
     }

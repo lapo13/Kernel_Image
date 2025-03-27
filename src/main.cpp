@@ -1,5 +1,6 @@
 #include "core/Image.h"
 #include "utils/ImageIO.h"
+#include "utils/Convolution_Engine.h"
 #include <iostream>
 
 int main() {
@@ -10,12 +11,14 @@ int main() {
         return 1;
     }
 
-    std::cout<<(int)img->getChannel(0)->getMin()<<std::endl;
-    std::cout<<(int)img->getChannel(0)->getMax()<<std::endl;
-    std::cout<<img->getNumChannels()<<std::endl;
-    std::cout<<img->getMagicNumber()<<std::endl;
-    std::cout<<img->getChannel(0)->getMean()<<std::endl;
-    //img->getChannel(0)->normalize(0,200);
+    Matrix<unsigned char> KS = ConvolutionEngine<unsigned char>::createSharpenKernel();
+    Matrix<unsigned char> KG = ConvolutionEngine<unsigned char>::createGaussianKernel(3, 1.0);
+    Matrix<unsigned char> KE = ConvolutionEngine<unsigned char>::createEdgeDetectionKernel();
+
+    ConvolutionEngine <unsigned char>::convolve(*img, KE);
+
+
+    //img->getChannel(0)->normalize(0,255);
 
     /*std::cout<<(int)img->getChannel(0)->getMin()<<std::endl;
     std::cout<<(int)img->getChannel(0)->getMax()<<std::endl;

@@ -2,19 +2,20 @@
 #define MATRIX_H
 #include <vector>
 
+template <typename T>
 class Matrix {
 
 private:
-    std::vector<unsigned char> data;
+    std::vector<T> data;
     int rows, cols;
 
 public:
     Matrix(int rows, int cols);
 
-    unsigned char& operator()(int i, int j) {
+    T& operator()(int i, int j) {
         return data[i* rows + j]; 
     }
-    const unsigned char& operator()(int i, int j) const {
+    const T& operator()(int i, int j) const {
         return data[i* rows + j]; 
     }
 

@@ -1,25 +1,28 @@
 #include "core/Image.h"
 
-Image::Channel::Channel(unsigned char* imgBuffer, int width, int height, int channel_num): 
-Matrix(height, width) {  // Nota: height e width invertiti
+template <typename T>
+Image<T>::Channel::Channel(T* imgBuffer, int width, int height, int channel_num): 
+Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
             size_t idx = (i * width + j) * 3 + channel_num;
-            (*this)(j, i) = imgBuffer[idx];  // Nota: j e i invertiti
+            (*this)(j, i) = imgBuffer[idx];
         }
     }
 }
 
-Image::Channel::Channel(unsigned char* imgBuffer, int width, int height): 
-Matrix(height, width) {  // Nota: height e width invertiti
+template <typename T>
+Image<T>::Channel::Channel(T* imgBuffer, int width, int height): 
+Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
-            (*this)(j, i) = imgBuffer[i * width + j];  // Nota: j e i invertiti
+            (*this)(j, i) = imgBuffer[i * width + j]; 
         }
     }
 }
 
-unsigned char Image::Channel::getMin() const {
+template <typename T>
+T Image<T>::Channel::getMin() const {
     unsigned char min = std::numeric_limits<unsigned char>::max();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -31,8 +34,8 @@ unsigned char Image::Channel::getMin() const {
     return min;
 };
     
-
-unsigned char Image::Channel::getMax() const {
+template <typename T>
+T Image<T>::Channel::getMax() const {
     unsigned char max = std::numeric_limits<unsigned char>::min();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -44,8 +47,8 @@ unsigned char Image::Channel::getMax() const {
     return max;
 };
 
-
-double Image::Channel::getMean() const {
+template <typename T>
+double Image<T>::Channel::getMean() const {
     double sum = 0;
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -55,8 +58,8 @@ double Image::Channel::getMean() const {
     return sum / (this->getRows() * this->getCols());
 };
 
-
-void Image::Channel::normalize(unsigned char newMin, unsigned char newMax) {
+template <typename T>
+void Image<T>::Channel::normalize(unsigned char newMin, unsigned char newMax) {
     unsigned char min = getMin();
     unsigned char max = getMax();
     for(int i = 0; i < this->getRows(); ++i) {
@@ -68,8 +71,8 @@ void Image::Channel::normalize(unsigned char newMin, unsigned char newMax) {
     this->setMax(newMax);
 };
 
-
-void Image::Channel::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
+template <typename T>
+void Image<T>::Channel::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(i, j) < threshold) {
@@ -80,3 +83,6 @@ void Image::Channel::threshold(unsigned char threshold, unsigned char lowValue, 
         }
     }
 };
+
+//Explicit instantiation
+template class Image<unsigned char>;

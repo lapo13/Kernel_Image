@@ -1,6 +1,7 @@
 #include "core/Image.h"
 
-Image::Image(unsigned char* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, unsigned char max):
+template <typename T>
+Image<T>::Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, T max): 
 width(width), height(height), NumChannels(NumChannels), max(max), MagicNumber(magicnumber) {
     if (NumChannels == 1) {
         channels.push_back(new Channel(imgBuffer, width, height));
@@ -11,24 +12,28 @@ width(width), height(height), NumChannels(NumChannels), max(max), MagicNumber(ma
     }
 }
 
-
-const std::vector<unsigned char> Image::getPixel(unsigned int x, unsigned int y) {
-    std::vector<unsigned char> pixel(NumChannels);
+template <typename T>
+const std::vector<T> Image<T>::getPixel(unsigned int x, unsigned int y) {
+    std::vector<T> pixel(NumChannels);
     for (int i = 0; i < NumChannels; ++i) {
         pixel[i] = Image::getChannel(i)->operator()(x, y);
     }
     return pixel;
 }
 
-void Image::setPixel(unsigned int x, unsigned int y, const unsigned char* pixel) {
+template <typename T>
+void Image<T>::setPixel(unsigned int x, unsigned int y, const T* pixel) {
     for (int i = 0; i < NumChannels; ++i) {
         Image::getChannel(i) -> operator()(x, y) = pixel[i];
     }
 }
 
-void Image::resize(unsigned int width, unsigned int height) {
+template <typename T>
+void Image<T>::resize(unsigned int width, unsigned int height) {
     for (int i = 0; i < NumChannels; ++i) {
         channels[i]->MatResize(height, width);
     }
 }
 
+//Explicit instantiation
+template class Image<unsigned char>;

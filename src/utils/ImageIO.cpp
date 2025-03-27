@@ -2,8 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
+#include <typeinfo>
 
-Image* ImageIO::loadImage(const std::string& filename) {
+template<typename T>
+Image<T>* ImageIO<T>::loadImage(const std::string& filename) {
     int width, height, maxVal, NumChannels;
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
@@ -29,18 +31,23 @@ Image* ImageIO::loadImage(const std::string& filename) {
 
     
     const size_t bufferSize = width * height * NumChannels;
-    unsigned char* imgBuffer = new unsigned char[bufferSize];
+    T* imgBuffer = new T[bufferSize];
+    
     if(imgBuffer == nullptr) {
-        std::cerr << "Error: Could not allocate memory for image buffer" << std::endl;
+        std::cerr << "Error: Could not allocate memory for buffer of type: " 
+                  << typeid(T).name() << std::endl;
         file.close();
         exit(1);
     }
 
+    // Read file data into buffer
+    file.read(reinterpret_cast<char*>(imgBuffer), bufferSize * sizeof(T));
     
-    file.read(reinterpret_cast<char*>(imgBuffer), bufferSize);
-    if (file.gcount() != (long) bufferSize) {
-        std::cerr << "Error: Could not read complete image data. Expected " 
-                  << bufferSize << " bytes but got " << file.gcount() << std::endl;
+    if (file.gcount() != (long)(bufferSize * sizeof(T))) {
+        std::cerr << "Error: Could not read complete image data of type: " 
+                  << typeid(T).name() << ". Expected " 
+                  << bufferSize * sizeof(T) << " bytes but got " 
+                  << file.gcount() << std::endl;
         delete[] imgBuffer;
         file.close();
         return nullptr;
@@ -48,13 +55,15 @@ Image* ImageIO::loadImage(const std::string& filename) {
 
     file.close();
     
-    Image* img = new Image(imgBuffer, width, height, NumChannels, magicNumber, maxVal);
+    // Create image with proper type
+    Image<T>* img = new Image<T>(imgBuffer, width, height, NumChannels, magicNumber, maxVal);
     delete[] imgBuffer;  
     
     return img;
 }
 
-void ImageIO::saveImage(const std::string &filename, Image& image) {
+template<typename T>
+void ImageIO<T>::saveImage(const std::string &filename, Image<T>& image) {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Error: Could not create file " << filename << std::endl;
@@ -69,7 +78,7 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
 
     // allocate buffer
     const size_t bufferSize = image.getWidth() * image.getHeight() * image.getNumChannels();
-    unsigned char* buffer = new unsigned char[bufferSize];
+    T* buffer = new T[bufferSize];  // Changed to T* from unsigned char*
 
     if(image.getMagicNumber() == "P5") {
         size_t idx = 0;
@@ -81,7 +90,7 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
         }
         for (int y = 0; y < image.getHeight(); ++y) {
             for (int x = 0; x < image.getWidth(); ++x) {
-                std::vector<unsigned char> pixel = image.getPixel(x, y);
+                std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
                 if (pixel.size() != 1) {
                     std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
                     delete[] buffer;
@@ -92,7 +101,6 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
             }
         }
     } 
-    
     else if(image.getMagicNumber() == "P6") {
         size_t idx = 0;
         if (image.getNumChannels() != 3) {
@@ -103,7 +111,7 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
         }
         for (int y = 0; y < image.getHeight(); ++y) {
             for (int x = 0; x < image.getWidth(); ++x) {
-                std::vector<unsigned char> pixel = image.getPixel(x, y);
+                std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
                 if (pixel.size() != 3) {
                     std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
                     delete[] buffer;
@@ -123,7 +131,10 @@ void ImageIO::saveImage(const std::string &filename, Image& image) {
     }
 
     // Write exactly bufferSize bytes
-    file.write(reinterpret_cast<const char*>(buffer), bufferSize);
+    file.write(reinterpret_cast<const char*>(buffer), bufferSize * sizeof(T));  // Added sizeof(T)
     delete[] buffer;
     file.close();
 }
+
+// Explicit instantiation of template class
+template class ImageIO<unsigned char>;

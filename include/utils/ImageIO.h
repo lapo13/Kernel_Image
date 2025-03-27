@@ -3,13 +3,13 @@
 #include <string>
 #include "core/Image.h"
 
-
+template<typename T>
 class ImageIO {
 private:
     ImageIO() = delete;
 public:
-    static Image* loadImage(const std::string& filename);
-    static void saveImage(const std::string &filename, Image& image);
+    static Image<T>* loadImage(const std::string& filename);
+    static void saveImage(const std::string &filename, Image<T>& image);
 };
 
 #endif // IMAGEIO_H

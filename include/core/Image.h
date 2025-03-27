@@ -5,19 +5,22 @@
 #include <string>
 #include <iostream>
 
+template <typename T>
 class Image {
 
 protected:
-    class Channel : public Matrix {
+
+    class Channel : public Matrix<T> {
     private:
         unsigned char min, max;   
 
     public:
-        Channel(unsigned char *imgBuffer, int width, int height, int channel_num);
-        Channel(unsigned char *imgBuffer, int width, int height);
+        Channel(T *imgBuffer, int width, int height, int channel_num);
+        Channel(T *imgBuffer, int width, int height);
 
-        unsigned char getMin() const;
-        unsigned char getMax() const;
+        T getMin() const;
+        T getMax() const;
+
         void setMin(unsigned char Min) {
             this->min = Min;
         }
@@ -35,24 +38,25 @@ protected:
 
 private:
     int width, height, NumChannels;
-    unsigned char max;
+    T max;
     std::string MagicNumber;
     std::vector<Channel*> channels;
 
 public:
-    Image(unsigned char* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, unsigned char max);
+    Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, T max);
+
 
     Channel* getChannel(int channel) {
         return channels[channel];
     }
 
-    const Channel* getChannel(unsigned int channel) const {
+    const Channel* getChannel(T channel) const {
         return channels[channel];
     }
 
-    void setPixel(unsigned int x, unsigned int y, const unsigned char* pixel);
+    void setPixel(unsigned int x, unsigned int y, const T* pixel);
 
-    const std::vector<unsigned char> getPixel(unsigned int x, unsigned int y);
+    const std::vector<T> getPixel(unsigned int x, unsigned int y);
 
     int getWidth() const {
         return width;

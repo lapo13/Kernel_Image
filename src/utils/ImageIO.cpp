@@ -6,31 +6,30 @@
 
 template<typename T>
 Image<T>* ImageIO<T>::loadImage(const std::string& filename) {
-    int width, height, maxVal, NumChannels;
+    ImageHeader header;
     std::ifstream file(filename, std::ios::binary);
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file " << filename << std::endl;
         std::cerr << "Error code: " << strerror(errno) << std::endl;
         exit(1);
     }
-    printf("File opened\n");
-
-    std::string magicNumber;
-    file >> magicNumber;
-    if (magicNumber != "P6" && magicNumber != "P5") {
-        std::cerr << "Error: Invalid magic number " << magicNumber << std::endl;
+    
+    // Read header
+    file >> header.magicNumber;
+    if (header.magicNumber != "P6" && header.magicNumber != "P5") {
+        std::cerr << "Error: File not supported " << std::endl;
         file.close();
         return nullptr;
     }
 
-    NumChannels = magicNumber == "P6" ? 3 : 1;
-    file >> width >> height >> maxVal;
+    header.numChannels = header.magicNumber == "P6" ? 3 : 1;
+    file >> header.width >> header.height >> header.maxVal;
 
     
     file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     
-    const size_t bufferSize = width * height * NumChannels;
+    const size_t bufferSize = header.width * header.height * header.numChannels;
     T* imgBuffer = new T[bufferSize];
     
     if(imgBuffer == nullptr) {
@@ -56,7 +55,7 @@ Image<T>* ImageIO<T>::loadImage(const std::string& filename) {
     file.close();
     
     // Create image with proper type
-    Image<T>* img = new Image<T>(imgBuffer, width, height, NumChannels, magicNumber);
+    Image<T>* img = new Image<T>(imgBuffer, header);
     delete[] imgBuffer;  
     
     return img;
@@ -71,25 +70,27 @@ void ImageIO<T>::saveImage(const std::string &filename, Image<T>& image) {
         return;
     }
 
+    ImageHeader header = image.getHeader();
+
     // Write header
-    file << image.getMagicNumber() << "\n"; 
-    file << image.getWidth() << " " << image.getHeight() << "\n";
-    file << 255 << "\n";
+    file << header.magicNumber << "\n"; 
+    file << header.width << " " << header.height << "\n";
+    file << header.maxVal << "\n";
 
     // allocate buffer
-    const size_t bufferSize = image.getWidth() * image.getHeight() * image.getNumChannels();
+    const size_t bufferSize = header.width * header.height * header.numChannels;
     T* buffer = new T[bufferSize];  // Changed to T* from unsigned char*
 
-    if(image.getMagicNumber() == "P5") {
+    if(header.magicNumber == "P5") {
         size_t idx = 0;
-        if (image.getNumChannels() != 1) {
+        if (header.numChannels != 1) {
             std::cerr << "Error: P5 format requires 1 channel" << std::endl;
             delete[] buffer;
             file.close();
             return;
         }
-        for (int y = 0; y < image.getHeight(); ++y) {
-            for (int x = 0; x < image.getWidth(); ++x) {
+        for (int y = 0; y < header.height; ++y) {
+            for (int x = 0; x < header.width; ++x) {
                 std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
                 if (pixel.size() != 1) {
                     std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
@@ -101,16 +102,16 @@ void ImageIO<T>::saveImage(const std::string &filename, Image<T>& image) {
             }
         }
     } 
-    else if(image.getMagicNumber() == "P6") {
+    else if(header.magicNumber == "P6") {
         size_t idx = 0;
-        if (image.getNumChannels() != 3) {
+        if (header.numChannels != 3) {
             std::cerr << "Error: P6 format requires 3 channels" << std::endl;
             delete[] buffer;
             file.close();
             return;
         }
-        for (int y = 0; y < image.getHeight(); ++y) {
-            for (int x = 0; x < image.getWidth(); ++x) {
+        for (int y = 0; y < header.height; ++y) {
+            for (int x = 0; x < header.width; ++x) {
                 std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
                 if (pixel.size() != 3) {
                     std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
@@ -124,7 +125,7 @@ void ImageIO<T>::saveImage(const std::string &filename, Image<T>& image) {
             }
         }
     } else {
-        std::cerr << "Error: Invalid magic number " << image.getMagicNumber() << std::endl;
+        std::cerr << "Error: Invalid magic number " << header.magicNumber << std::endl;
         delete[] buffer;
         file.close();
         return;

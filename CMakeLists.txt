@@ -26,6 +26,7 @@ set(HEADER
     include/core/Matrix.h
     include/core/Channel.h
     include/utils/ImageIO.h
+    include/ImageHeader.h
     #include/utils/Convolution_Engine.h
 )
 

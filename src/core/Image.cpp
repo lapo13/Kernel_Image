@@ -1,4 +1,5 @@
 #include "core/Image.h"
+#include <stdexcept>
 
 template <typename T>
 Image<T>::Image(T* imgBuffer, ImageHeader header): header(header) {
@@ -22,16 +23,21 @@ void Image<T>::setChannel(int channel, const Channel<T>& data) {
 }
 
 template <typename T>
-const std::vector<T> Image<T>::getPixel(unsigned int x, unsigned int y) {
+const std::vector<T> Image<T>::getPixel(int x, int y) {
+    // Check bounds
+    if (x >= header.width || y >= header.height) {
+        throw std::out_of_range("Pixel coordinates out of bounds");
+    }
+
     std::vector<T> pixel(header.numChannels);
     for (int i = 0; i < header.numChannels; ++i) {
-        pixel[i] = channels[i]->operator()(x, y);
+        pixel[i] = channels[i]->operator()(y, x);  // Note: Channel uses (row,col) order
     }
     return pixel;
 }
 
 template <typename T>
-void Image<T>::setPixel(unsigned int x, unsigned int y, const T* pixel) {
+void Image<T>::setPixel(int x, int y, const T* pixel) {
     for (int i = 0; i < header.numChannels; ++i) {
         channels[i]->operator()(x, y) = pixel[i];
     }

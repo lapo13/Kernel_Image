@@ -18,8 +18,8 @@ public:
     Channel<T>& getChannel(int channel);
     void setChannel(int channel, const Channel<T>& data);
 
-    void setPixel(unsigned int x, unsigned int y, const T* pixel);
-    const std::vector<T> getPixel(unsigned int x, unsigned int y);
+    void setPixel(int x, int y, const T* pixel);
+    const std::vector<T> getPixel(int x, int y);
 
     int getWidth() const {
         return this->header.width;

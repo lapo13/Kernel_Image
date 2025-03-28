@@ -1,6 +1,6 @@
 #include "core/Image.h"
 #include "utils/ImageIO.h"
-//#include "utils/Convolution_Engine.h"
+#include "utils/Convolution_Engine.h"
 #include <iostream>
 
 int main() {
@@ -11,11 +11,11 @@ int main() {
         return 1;
     }
 
-    /*Matrix<unsigned char> KS = ConvolutionEngine<unsigned char, unsigned char>::createSharpenKernel();
-    Matrix<double> KG = ConvolutionEngine<unsigned char, double>::createGaussianKernel(3, 1.0);
-    Matrix<unsigned char> KE = ConvolutionEngine<unsigned char, unsigned char>::createEdgeDetectionKernel();
+    Matrix<unsigned char> KS = ConvolutionEngine<unsigned char, unsigned char>::createSharpenKernel();
+    /*Matrix<double> KG = ConvolutionEngine<unsigned char, double>::createGaussianKernel(3, 1.0);
+    Matrix<unsigned char> KE = ConvolutionEngine<unsigned char, unsigned char>::createEdgeDetectionKernel();*/
 
-    ConvolutionEngine <unsigned char, double>::convolve(*img, KG);*/
+    ConvolutionEngine <unsigned char, unsigned char>::convolve(*img, KS);
 
 
     //img->getChannel(0)->normalize(0,255);

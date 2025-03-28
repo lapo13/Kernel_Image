@@ -1,8 +1,7 @@
 #include "core/Channel.h"
 
 template <typename T>
-Channel<T>::Channel(T* imgBuffer, int width, int height, int channel_num): 
-Matrix<T>(height, width) {  // Nota: height e width invertiti
+Channel<T>::Channel(T* imgBuffer, int width, int height, int channel_num): Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
             size_t idx = (i * width + j) * 3 + channel_num;
@@ -12,8 +11,7 @@ Matrix<T>(height, width) {  // Nota: height e width invertiti
 }
 
 template <typename T>
-Channel<T>::Channel(T* imgBuffer, int width, int height): 
-Matrix<T>(height, width) {  // Nota: height e width invertiti
+Channel<T>::Channel(T* imgBuffer, int width, int height): Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
             (*this)(j, i) = imgBuffer[i * width + j]; 

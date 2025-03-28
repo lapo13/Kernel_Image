@@ -13,18 +13,27 @@ width(width), height(height), NumChannels(NumChannels), max(max), MagicNumber(ma
 }
 
 template <typename T>
-const std::vector<T> Image<T>::getPixel(unsigned int x, unsigned int y) {
-    std::vector<T> pixel(NumChannels);
-    for (int i = 0; i < NumChannels; ++i) {
-        pixel[i] = Image::getChannel(i)->operator()(x, y);
-    }
-    return pixel;
+Channel<T>& Image<T>::getChannel(int channel) {
+    return *channels[channel];
 }
 
 template <typename T>
+void Image<T>::setChannel(int channel, const Channel<T>& data) {
+    *channels[channel] = data;
+}
+
+template <typename T>
+const std::vector<T> Image<T>::getPixel(unsigned int x, unsigned int y) {
+    std::vector<T> pixel(NumChannels);
+    for (int i = 0; i < NumChannels; ++i) {
+        pixel[i] = channels[i]->operator()(x, y);
+    }
+    return pixel;
+}
+template <typename T>
 void Image<T>::setPixel(unsigned int x, unsigned int y, const T* pixel) {
     for (int i = 0; i < NumChannels; ++i) {
-        Image::getChannel(i) -> operator()(x, y) = pixel[i];
+        channels[i]->operator()(x, y) = pixel[i];
     }
 }
 

@@ -1,7 +1,7 @@
-#include "core/Image.h"
+#include "core/Channel.h"
 
 template <typename T>
-Image<T>::Channel::Channel(T* imgBuffer, int width, int height, int channel_num): 
+Channel<T>::Channel(T* imgBuffer, int width, int height, int channel_num): 
 Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
@@ -12,7 +12,7 @@ Matrix<T>(height, width) {  // Nota: height e width invertiti
 }
 
 template <typename T>
-Image<T>::Channel::Channel(T* imgBuffer, int width, int height): 
+Channel<T>::Channel(T* imgBuffer, int width, int height): 
 Matrix<T>(height, width) {  // Nota: height e width invertiti
     for(int i = 0; i < height; ++i) {
         for(int j = 0; j < width; ++j) {
@@ -22,7 +22,7 @@ Matrix<T>(height, width) {  // Nota: height e width invertiti
 }
 
 template <typename T>
-T Image<T>::Channel::getMin() const {
+T Channel<T>::getMin() const {
     unsigned char min = std::numeric_limits<unsigned char>::max();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -35,7 +35,7 @@ T Image<T>::Channel::getMin() const {
 };
     
 template <typename T>
-T Image<T>::Channel::getMax() const {
+T Channel<T>::getMax() const {
     unsigned char max = std::numeric_limits<unsigned char>::min();
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -48,7 +48,7 @@ T Image<T>::Channel::getMax() const {
 };
 
 template <typename T>
-double Image<T>::Channel::getMean() const {
+double Channel<T>::getMean() const {
     double sum = 0;
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
@@ -58,21 +58,29 @@ double Image<T>::Channel::getMean() const {
     return sum / (this->getRows() * this->getCols());
 };
 
-template <typename T>
-void Image<T>::Channel::normalize(unsigned char newMin, unsigned char newMax) {
-    unsigned char min = getMin();
-    unsigned char max = getMax();
+/*template <typename T>
+void Channel<T>::normalize(unsigned char newMin, unsigned char newMax) {
+    T min = getMin();
+    T max = getMax();
+    double range = max - min;
+    double newRange = newMax - newMin;
+    
+    // Avoid division by zero
+    if (range == 0) {
+        return;
+    }
+    
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
-            (*this)(i, j) = (newMax - newMin) * ((*this)(i, j) - min) / (max - min) + newMin;
+            // First scale to [0,1], then scale to new range and offset
+            double normalized = (static_cast<double>((*this)(i, j)) - min) / range;
+            (*this)(i, j) = static_cast<T>(normalized * newRange + newMin);
         }
     }
-    this->setMin(newMin);
-    this->setMax(newMax);
-};
+}*/
 
 template <typename T>
-void Image<T>::Channel::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
+void Channel<T>::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(i, j) < threshold) {
@@ -85,4 +93,5 @@ void Image<T>::Channel::threshold(unsigned char threshold, unsigned char lowValu
 };
 
 //Explicit instantiation
-template class Image<unsigned char>;
+template class Channel<unsigned char>;
+template class Channel<double>;

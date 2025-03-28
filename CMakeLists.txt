@@ -18,14 +18,15 @@ set (SOURCE
     src/core/Matrix.cpp
     src/core/Channel.cpp
     src/utils/ImageIO.cpp
-    src/utils/Convolution_Engine.cpp
+    #src/utils/Convolution_Engine.cpp
     )
 
 set(HEADER
     include/core/Image.h
     include/core/Matrix.h
+    include/core/Channel.h
     include/utils/ImageIO.h
-    include/utils/Convolution_Engine.h
+    #include/utils/Convolution_Engine.h
 )
 
 # Crea la libreria kernel_image

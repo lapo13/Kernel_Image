@@ -1,8 +1,8 @@
 #include "core/Image.h"
 
 template <typename T>
-Image<T>::Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, T max): 
-width(width), height(height), NumChannels(NumChannels), max(max), MagicNumber(magicnumber) {
+Image<T>::Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber): 
+width(width), height(height), NumChannels(NumChannels), MagicNumber(magicnumber) {
     if (NumChannels == 1) {
         channels.push_back(new Channel(imgBuffer, width, height));
     } else {

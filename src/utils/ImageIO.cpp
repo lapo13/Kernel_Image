@@ -56,7 +56,7 @@ Image<T>* ImageIO<T>::loadImage(const std::string& filename) {
     file.close();
     
     // Create image with proper type
-    Image<T>* img = new Image<T>(imgBuffer, width, height, NumChannels, magicNumber, maxVal);
+    Image<T>* img = new Image<T>(imgBuffer, width, height, NumChannels, magicNumber);
     delete[] imgBuffer;  
     
     return img;
@@ -74,7 +74,7 @@ void ImageIO<T>::saveImage(const std::string &filename, Image<T>& image) {
     // Write header
     file << image.getMagicNumber() << "\n"; 
     file << image.getWidth() << " " << image.getHeight() << "\n";
-    file << image.getMax() << "\n";
+    file << 255 << "\n";
 
     // allocate buffer
     const size_t bufferSize = image.getWidth() * image.getHeight() * image.getNumChannels();

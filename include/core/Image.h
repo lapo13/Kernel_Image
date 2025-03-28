@@ -10,12 +10,11 @@ class Image {
 
 private:
     int width, height, NumChannels;
-    T max;
     std::string MagicNumber;
     std::vector<Channel<T>*> channels;
 
 public:
-    Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber, T max);
+    Image(T* imgBuffer, int width, int height, int NumChannels, std::string magicnumber);
 
     Channel<T>& getChannel(int channel);
     void setChannel(int channel, const Channel<T>& data);
@@ -34,9 +33,6 @@ public:
     }
     const std::string getMagicNumber() const {
         return MagicNumber;
-    }
-    int getMax() const {
-        return (int)max;
     }
 
     void resize(unsigned int width, unsigned int height);

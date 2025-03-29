@@ -12,11 +12,11 @@ private:
 public:
     Matrix(int rows, int cols);
 
-    T& operator()(int i, int j) {
-        return data[i* rows + j]; 
+    T& operator()(int x, int y) {
+        return data[y* cols + x]; 
     }
-    const T& operator()(int i, int j) const {
-        return data[i* rows + j]; 
+    const T& operator()(int x, int y) const {
+        return data[y* cols + x]; 
     }
 
     int getRows() const {

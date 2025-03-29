@@ -20,10 +20,8 @@ class Channel : public Matrix<T> {
         void setMax(T max){
             this->max = max;
         };
- 
         double getMean() const;
  
-        //void normalize(unsigned char newMin, unsigned char newMax);
         void threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue);
  
         ~Channel() = default;

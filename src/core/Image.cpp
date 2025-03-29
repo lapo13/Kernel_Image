@@ -31,7 +31,7 @@ const std::vector<T> Image<T>::getPixel(int x, int y) {
 
     std::vector<T> pixel(header.numChannels);
     for (int i = 0; i < header.numChannels; ++i) {
-        pixel[i] = channels[i]->operator()(y, x);  // Note: Channel uses (row,col) order
+        pixel[i] = channels[i]->operator()(x, y);  // Note: Channel uses (row,col) order
     }
     return pixel;
 }

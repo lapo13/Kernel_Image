@@ -1,7 +1,4 @@
 #include "utils/Convolution_Engine.h"
-#include <cmath>
-#include <algorithm>
-#include <utility> 
 #include <iostream>
 #include <thread>
 
@@ -29,39 +26,39 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
     int kernelSize = kernel.getRows();
     int kernelRadius = kernelSize / 2;
 
+    int chRows = channel.getRows();
+    int chCols = channel.getCols();
+
     // Create buffer for output
-    double* outputBuffer = new double[channel.getRows() * channel.getCols()];
+    double* outputBuffer = new double[chRows * chCols];
 
     // Initialize min and max values for normalization
     double minVal = 0.0;
     double maxVal = 0.0;
 
     // Process inner pixels - using row-major order
-    for(int row = kernelRadius; row < channel.getRows() - kernelRadius; ++row) {
-        for(int col = kernelRadius; col < channel.getCols() - kernelRadius; ++col) {
-            double sum = 0.0;
+    for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
+        for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
 
             // Apply kernel - match image orientation
             for(int krow = -kernelRadius; krow <= kernelRadius; ++krow) {
                 for(int kcol = -kernelRadius; kcol <= kernelRadius; ++kcol) {
-                    sum += static_cast<double>(channel( col + kcol, row + krow)) *
+                    outputBuffer[row *chCols + col] += 
+                        static_cast<double>(channel( col + kcol, row + krow)) *
                           static_cast<double>(kernel( kcol + kernelRadius, krow + kernelRadius));
-                    minVal = (sum < minVal) ? sum : minVal;
-                    maxVal = (sum > maxVal) ? sum : maxVal;
                 }
             }
-
-            // Store the result in the output buffer
-            outputBuffer[row * channel.getCols() + col] = sum;
+            minVal = (outputBuffer[row *chCols + col] < minVal) ? outputBuffer[row *chCols + col] : minVal;
+            maxVal = (outputBuffer[row *chCols + col] > maxVal) ? outputBuffer[row *chCols + col] : maxVal;
         }
     }
     // Normalize the results
     normalizeResults(outputBuffer, minVal, maxVal, channel, kernelRadius);
 
     // Update the channel with the new values
-    for(int row = kernelRadius; row < channel.getRows() - kernelRadius; ++row) {
-        for(int col = kernelRadius; col < channel.getCols() - kernelRadius; ++col) {
-            channel(col, row) = static_cast<ImageType>(outputBuffer[row * channel.getCols() + col]);
+    for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
+        for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
+            channel(col, row) = static_cast<ImageType>(outputBuffer[row * chCols + col]);
         }
     }
 }
@@ -69,14 +66,17 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
 template<typename ImageType, typename KernelType>
 void ConvolutionEngine<ImageType, KernelType>::normalizeResults(double* outputBuffer, double minVal, double maxVal, const Channel<ImageType>& channel, int kernelRadius) {
     double range = maxVal - minVal;
+    int chCols = channel.getCols();
+    int chRows = channel.getRows();
     ImageType max = channel.getMax();
+
     if (range == 0) {
         range = 1;
     }
-    for (int row = kernelRadius; row < channel.getRows() - kernelRadius; ++row) {
-        for (int col = kernelRadius; col < channel.getCols() - kernelRadius; ++col) {
-            double normalizedValue = ((outputBuffer[row * channel.getCols() + col] - minVal) / range) * (double)max;
-            outputBuffer[row * channel.getCols() + col] = normalizedValue;
+    for (int row = kernelRadius; row < chRows - kernelRadius; ++row) {
+        for (int col = kernelRadius; col < chCols - kernelRadius; ++col) {
+            double normalizedValue = ((outputBuffer[row * chCols + col] - minVal) / range) * (double)max;
+            outputBuffer[row * chCols + col] = normalizedValue;
         }
     }
 }

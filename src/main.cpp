@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main() {
-    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.pgm)");
+    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_5184×3456.ppm)");
 
     if (img == NULL) {
         std::cerr << "Error: Could not load image" << std::endl;
@@ -16,7 +16,6 @@ int main() {
 
     ConvolutionEngine <unsigned char, unsigned char>::convolve(*img, KE);
 
-
     //img->getChannel(0)->normalize(0,255);
 
     /*std::cout<<(int)img->getChannel(0)->getMin()<<std::endl;
@@ -24,7 +23,7 @@ int main() {
     std::cout<<img->getChannel(0)->getMean()<<std::endl;
     img->getChannel(0)->threshold(128,0,255);*/
 
-    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.pgm)", *img);
+    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_5184×3456_out.ppm)", *img);
 
     delete img;
     return 0;

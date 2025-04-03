@@ -30,11 +30,11 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
     int chCols = channel.getCols();
 
     // Create buffer for output
-    double* outputBuffer = new double[chRows * chCols];
+    KernelType* outputBuffer = new KernelType[chRows * chCols];
 
     // Initialize min and max values for normalization
-    double minVal = 0.0;
-    double maxVal = 0.0;
+    KernelType minVal = 0.0;
+    KernelType maxVal = 0.0;
 
     // Process inner pixels - using row-major order
     for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
@@ -44,14 +44,25 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
             for(int krow = -kernelRadius; krow <= kernelRadius; ++krow) {
                 for(int kcol = -kernelRadius; kcol <= kernelRadius; ++kcol) {
                     outputBuffer[row *chCols + col] += 
-                        static_cast<double>(channel( col + kcol, row + krow)) *
-                          static_cast<double>(kernel( kcol + kernelRadius, krow + kernelRadius));
+                        (static_cast<KernelType>(channel( col + kcol, row + krow))) *
+                        (kernel( kcol + kernelRadius, krow + kernelRadius));
+                    
                 }
             }
             minVal = (outputBuffer[row *chCols + col] < minVal) ? outputBuffer[row *chCols + col] : minVal;
             maxVal = (outputBuffer[row *chCols + col] > maxVal) ? outputBuffer[row *chCols + col] : maxVal;
         }
     }
+
+    // Process border pixels
+    for(int row = 0; row < chRows; ++row) {
+        for(int col = 0; col < chCols; ++col) {
+            if (row < kernelRadius || row >= chRows - kernelRadius || col < kernelRadius || col >= chCols - kernelRadius) {
+                outputBuffer[row *chCols + col] = 0.0; // Set border pixels to zero
+            }
+        }
+    }
+
     // Normalize the results
     normalizeResults(outputBuffer, minVal, maxVal, channel, kernelRadius);
 
@@ -61,22 +72,28 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
             channel(col, row) = static_cast<ImageType>(outputBuffer[row * chCols + col]);
         }
     }
+
+    // Clean up
+    delete[] outputBuffer;
+    outputBuffer = nullptr;
+
 }
 
 template<typename ImageType, typename KernelType>
-void ConvolutionEngine<ImageType, KernelType>::normalizeResults(double* outputBuffer, double minVal, double maxVal, const Channel<ImageType>& channel, int kernelRadius) {
-    double range = maxVal - minVal;
+void ConvolutionEngine<ImageType, KernelType>::normalizeResults(KernelType* outputBuffer, KernelType minVal, KernelType maxVal, const Channel<ImageType>& channel, int kernelRadius) {
+    double range = static_cast<double>(maxVal - minVal);
+    if (range == 0) {
+        range = 1; // Avoid division by zero
+    }
     int chCols = channel.getCols();
     int chRows = channel.getRows();
-    ImageType max = channel.getMax();
+    double max = static_cast<double>(channel.getMax()); 
 
-    if (range == 0) {
-        range = 1;
-    }
+    // Normalize the output buffer
     for (int row = kernelRadius; row < chRows - kernelRadius; ++row) {
         for (int col = kernelRadius; col < chCols - kernelRadius; ++col) {
-            double normalizedValue = ((outputBuffer[row * chCols + col] - minVal) / range) * (double)max;
-            outputBuffer[row * chCols + col] = normalizedValue;
+            double normalizedValue = ((static_cast<double>(outputBuffer[row * chCols + col] - minVal)) / range) * max;
+            outputBuffer[row * chCols + col] = static_cast<KernelType>(normalizedValue);
         }
     }
 }
@@ -96,9 +113,9 @@ bool ConvolutionEngine<ImageType, KernelType>::isValid(Matrix<KernelType> kernel
 template<typename ImageType, typename KernelType>
 Matrix<KernelType> ConvolutionEngine<ImageType, KernelType>::createSharpenKernel() {
     Matrix<KernelType> kernel(3, 3);
-    kernel(0, 0) = 0; kernel(0, 1) = -1; kernel(0, 2) = 0;
-    kernel(1, 0) = -1; kernel(1, 1) = 2; kernel(1, 2) = -1;
-    kernel(2, 0) = 0; kernel(2, 1) = -1; kernel(2, 2) = 0;
+    kernel(0, 0) = -1; kernel(0, 1) = -1; kernel(0, 2) = -1;
+    kernel(1, 0) = -1; kernel(1, 1) = 9; kernel(1, 2) = -1;
+    kernel(2, 0) = -1; kernel(2, 1) = -1; kernel(2, 2) = -1;
     if(isValid(kernel)){
         return kernel;
     }else {
@@ -119,10 +136,37 @@ Matrix<KernelType> ConvolutionEngine<ImageType, KernelType>::createEmbossKernel(
     }
 }
 
+template<typename ImageType, typename KernelType>
+Matrix<KernelType> ConvolutionEngine<ImageType, KernelType>::createBlurringKernel(){
+    Matrix<KernelType> kernel(3, 3);
+    kernel(0, 0) = (1.0f / 9.0f); kernel(0, 1) = (1.0f / 9.0f); kernel(0, 2) = (1.0f / 9.0f);
+    kernel(1, 0) = (1.0f / 9.0f); kernel(1, 1) = (1.0f / 9.0f); kernel(1, 2) = (1.0f / 9.0f);
+    kernel(2, 0) = (1.0f / 9.0f); kernel(2, 1) = (1.0f / 9.0f); kernel(2, 2) = (1.0f / 9.0f);
+
+    if(isValid(kernel)){
+        return kernel;
+    }else {
+        throw std::runtime_error("Invalid kernel dimensions: kernel size must be odd");
+    }
+}
+
+template<typename ImageType, typename KernelType>
+Matrix<KernelType> ConvolutionEngine<ImageType, KernelType>::createEdgeDetectionKernel(){
+    Matrix<KernelType> kernel(3, 3);
+    kernel(0, 0) = 0; kernel(0, 1) = 1; kernel(0, 2) = 0;
+    kernel(1, 0) = 1; kernel(1, 1) = -4; kernel(1, 2) = 1;
+    kernel(2, 0) = 0; kernel(2, 1) = 1; kernel(2, 2) = 0;
+
+    if(isValid(kernel)){
+        return kernel;
+    }else {
+        throw std::runtime_error("Invalid kernel dimensions: kernel size must be odd");
+    }
+}
 // Add explicit instantiations for common type combinations
 template class ConvolutionEngine<unsigned char, double>;
-//template class ConvolutionEngine<unsigned char, float>;
-template class ConvolutionEngine<unsigned char, unsigned char>;
+template class ConvolutionEngine<unsigned char, float>;
+template class ConvolutionEngine<unsigned char, int>;
 //template class ConvolutionEngine<float, float>;
 
 

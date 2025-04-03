@@ -72,3 +72,5 @@ void Channel<T>::threshold(unsigned char threshold, unsigned char lowValue, unsi
 //Explicit instantiation
 template class Channel<unsigned char>;
 template class Channel<double>;
+template class Channel<int>;
+template class Channel<float>;

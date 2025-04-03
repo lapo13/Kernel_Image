@@ -26,3 +26,5 @@ void Matrix<T>::MatResize(int rows, int cols) {
 // Explicit instantiation
 template class Matrix<unsigned char>;
 template class Matrix<double>;
+template class Matrix<int>;
+template class Matrix<float>;

@@ -52,3 +52,6 @@ void Image<T>::resize(unsigned int width, unsigned int height) {
 
 //Explicit instantiation
 template class Image<unsigned char>;
+template class Image<double>;
+template class Image<int>;
+template class Image<float>;

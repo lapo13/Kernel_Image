@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Kernel_Image)
+project(kernel_image VERSION 1.0)
 
 # Imposta standard C++ e opzioni
 set(CMAKE_CXX_STANDARD 17)

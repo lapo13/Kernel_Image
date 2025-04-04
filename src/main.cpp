@@ -16,7 +16,7 @@ int main() {
     Matrix<float> KB = ConvolutionEngine<unsigned char, float>::createBlurringKernel();
     Matrix<int> KE2 = ConvolutionEngine<unsigned char, int>::createEdgeDetectionKernel();
 
-    ConvolutionEngine <unsigned char, int>::convolve(*img, KE2);
+    ConvolutionEngine <unsigned char, float>::convolve(*img, KB);
 
     //img->getChannel(0)->normalize(0,255);
 

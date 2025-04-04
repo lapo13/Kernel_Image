@@ -17,3 +17,9 @@ target_include_directories(myprogram PUBLIC
 
 # Link the executable to the kernel_image library
 target_link_libraries(myprogram kernel_image)
+
+# Enable testing
+enable_testing()
+
+# Add test directory
+add_subdirectory(${PROJECT_SOURCE_DIR}/test)

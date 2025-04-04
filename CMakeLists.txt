@@ -36,18 +36,17 @@ add_library(kernel_image
         ${HEADER}
 )
 
+# Linka la libreria kernel_image con le librerie necessarie
 target_include_directories(kernel_image PUBLIC
         ${PROJECT_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/src
 )
 
 # Eseguibile principale
 add_executable(myprogram src/main.cpp)
 target_link_libraries(myprogram PRIVATE kernel_image)
-target_include_directories(myprogram PRIVATE
-        ${PROJECT_SOURCE_DIR}/include)
 
 # ======= SEZIONE TEST =======
-#enable_testing()  # Abilita CTest
+enable_testing()  # Abilita CTest
+add_subdirectory(test)
 
-# Aggiungi la sottodirectory dei test (dopo kernel_image!)
-#add_subdirectory(tests)

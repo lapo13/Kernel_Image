@@ -21,7 +21,7 @@ Channel<T>::Channel(T* imgBuffer, int width, int height): Matrix<T>(height, widt
 
 template <typename T>
 T Channel<T>::getMin() const {
-    unsigned char min = std::numeric_limits<unsigned char>::max();
+    T min = (*this)(0, 0);
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(j, i) < min) {
@@ -34,7 +34,7 @@ T Channel<T>::getMin() const {
     
 template <typename T>
 T Channel<T>::getMax() const {
-    unsigned char max = std::numeric_limits<unsigned char>::min();
+    T max = (*this)(0, 0);
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
             if((*this)(j, i) > max) {
@@ -54,19 +54,6 @@ double Channel<T>::getMean() const {
         }
     }
     return sum / (this->getRows() * this->getCols());
-};
-
-template <typename T>
-void Channel<T>::threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue) {
-    for(int i = 0; i < this->getRows(); ++i) {
-        for(int j = 0; j < this->getCols(); ++j) {
-            if((*this)(j, i) < threshold) {
-                (*this)(j, i) = lowValue;
-            } else {
-                (*this)(j, i) = highValue;
-            }
-        }
-    }
 };
 
 //Explicit instantiation

@@ -10,12 +10,20 @@ private:
     int rows, cols;
 
 public:
-    Matrix(int rows, int cols);
+    Matrix(int rows = 2, int cols = 2) : rows(rows), cols(cols) {
+        data.resize(rows * cols);
+    }  
 
     T& operator()(int x, int y) {
+        if (x < 0 || x >= cols || y < 0 || y >= rows) {
+            throw std::out_of_range("Matrix index out of range");
+        }
         return data[y* cols + x]; 
     }
     const T& operator()(int x, int y) const {
+        if (x < 0 || x >= cols || y < 0 || y >= rows) {
+            throw std::out_of_range("Matrix index out of range");
+        }
         return data[y* cols + x]; 
     }
 

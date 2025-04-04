@@ -14,15 +14,7 @@ class Channel : public Matrix<T> {
 
         T getMin() const;
         T getMax() const;
-        void setMin(T min){
-            this->min = min;
-        };
-        void setMax(T max){
-            this->max = max;
-        };
         double getMean() const;
- 
-        void threshold(unsigned char threshold, unsigned char lowValue, unsigned char highValue);
  
         ~Channel() = default;
      };

@@ -2,19 +2,14 @@
 #include <iostream>
 
 template <typename T>
-Matrix<T>::Matrix(int rows, int cols): rows(rows), cols(cols) {
-    data.resize(rows * cols);
-}
-
-template <typename T>
 void Matrix<T>::MatResize(int rows, int cols) {
     std::vector<T> newData(rows * cols);
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            if (i < this->rows && j < this->cols) {
+    for(int i = 0; i < this->rows; ++i) {
+        for(int j = 0; j < this->cols; ++j) {
+            if (i < rows && j < cols) {
                 newData[i * cols + j] = data[i * this->cols + j];
             } else {
-                newData[i * cols + j] = 0;
+                newData[i * cols + j] = 0; 
             }
         }
     }

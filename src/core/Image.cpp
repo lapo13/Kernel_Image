@@ -38,6 +38,11 @@ const std::vector<T> Image<T>::getPixel(int x, int y) {
 
 template <typename T>
 void Image<T>::setPixel(int x, int y, const T* pixel) {
+    // Check bounds
+    if (x >= header.width || y >= header.height) {
+        throw std::out_of_range("Pixel coordinates out of bounds");
+    }
+
     for (int i = 0; i < header.numChannels; ++i) {
         channels[i]->operator()(x, y) = pixel[i];
     }
@@ -48,6 +53,8 @@ void Image<T>::resize(unsigned int width, unsigned int height) {
     for (int i = 0; i < header.numChannels; ++i) {
         channels[i]->MatResize(height, width);
     }
+    this->header.width = width;
+    this->header.height = height;
 }
 
 //Explicit instantiation

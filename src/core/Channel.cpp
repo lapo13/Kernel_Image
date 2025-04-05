@@ -50,10 +50,10 @@ double Channel<T>::getMean() const {
     double sum = 0;
     for(int i = 0; i < this->getRows(); ++i) {
         for(int j = 0; j < this->getCols(); ++j) {
-            sum += (double)(*this)(j, i);
+            sum += (double)((*this)(j, i));
         }
     }
-    return sum / (this->getRows() * this->getCols());
+    return (sum / (this->getRows() * this->getCols()));
 };
 
 //Explicit instantiation

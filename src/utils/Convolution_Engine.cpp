@@ -10,34 +10,44 @@ void ConvolutionEngine<ImageType, KernelType>::convolve(Image<ImageType>& image,
 
     for (int c = 0; c < numChannels; ++c) {
         threads[c] = std::thread([&image, &kernel, c]() {
-            applyKernel(image.getChannel(c), kernel);
-        });
-    }
+            int kernelSize = kernel.getRows();
+            int kernelRadius = kernelSize / 2;
+            int chRows = image.getChannel(c).getRows();
+            int chCols = image.getChannel(c).getCols();
 
-    for (int i = 0; i < numChannels; ++i) {
-        if (threads[i].joinable()) {
-            threads[i].join();
+            KernelType* outputBuffer = new KernelType[chRows * chCols];
+            for (int i = 0; i < chRows * chCols; ++i) {
+                outputBuffer[i] = 0;
+            }
+
+            applyKernel(image.getChannel(c), kernel, kernelRadius, outputBuffer);
+            // Normalize the results
+            normalizeResults(outputBuffer, image.getChannel(c), kernelRadius);
+
+            // Update the channel with the new values
+            for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
+                for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
+                    (image.getChannel(c))(col, row) = static_cast<ImageType>(outputBuffer[row * chCols + col]);
+                }
+            }
+
+            // Clean up
+            delete[] outputBuffer;
+            outputBuffer = nullptr;
+                });
+            }
+
+            for (int i = 0; i < numChannels; ++i) {
+                if (threads[i].joinable()) {
+                    threads[i].join();
+                }
+            }
         }
-    }
-}
 
 template<typename ImageType, typename KernelType>
-void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& channel, const Matrix<KernelType>& kernel) {
-    int kernelSize = kernel.getRows();
-    int kernelRadius = kernelSize / 2;
-
+void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& channel, const Matrix<KernelType>& kernel, int kernelRadius, KernelType* outputBuffer) {
     int chRows = channel.getRows();
     int chCols = channel.getCols();
-
-    // Create buffer for output
-    KernelType* outputBuffer = new KernelType[chRows * chCols];
-    for (int i = 0; i < chRows * chCols; ++i) {
-        outputBuffer[i] = 0;
-    }
-
-    // Initialize min and max values for normalization
-    KernelType minVal = 0.0;
-    KernelType maxVal = 0.0;
 
     // Process inner pixels - using row-major order
     for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
@@ -52,36 +62,30 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
                     
                 }
             }
-            minVal = (outputBuffer[row *chCols + col] < minVal) ? outputBuffer[row *chCols + col] : minVal;
-            maxVal = (outputBuffer[row *chCols + col] > maxVal) ? outputBuffer[row *chCols + col] : maxVal;
         }
     }
-
-    // Normalize the results
-    normalizeResults(outputBuffer, minVal, maxVal, channel, kernelRadius);
-
-    // Update the channel with the new values
-    for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
-        for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
-            channel(col, row) = static_cast<ImageType>(outputBuffer[row * chCols + col]);
-        }
-    }
-
-    // Clean up
-    delete[] outputBuffer;
-    outputBuffer = nullptr;
-
 }
 
 template<typename ImageType, typename KernelType>
-void ConvolutionEngine<ImageType, KernelType>::normalizeResults(KernelType* outputBuffer, KernelType minVal, KernelType maxVal, const Channel<ImageType>& channel, int kernelRadius) {
+void ConvolutionEngine<ImageType, KernelType>::normalizeResults(KernelType* outputBuffer, const Channel<ImageType>& channel, int kernelRadius) {
+    int chCols = channel.getCols();
+    int chRows = channel.getRows();
+    double max = static_cast<double>(channel.getMax()); 
+    
+    KernelType minVal = outputBuffer[0];
+    KernelType maxVal = outputBuffer[0];
+    // Find min and max values in the output buffer
+    for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
+        for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
+            minVal = outputBuffer[row * chCols + col] < minVal ? outputBuffer[row * chCols + col] : minVal;
+            maxVal = outputBuffer[row * chCols + col] > maxVal ? outputBuffer[row * chCols + col] : maxVal;
+        }
+    }
+    // Calculate the range
     double range = static_cast<double>(maxVal - minVal);
     if (range == 0) {
         range = 1; // Avoid division by zero
     }
-    int chCols = channel.getCols();
-    int chRows = channel.getRows();
-    double max = static_cast<double>(channel.getMax()); 
 
     // Normalize the output buffer
     for (int row = kernelRadius; row < chRows - kernelRadius; ++row) {

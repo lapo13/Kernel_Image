@@ -4,8 +4,8 @@
 #include <iostream>
 
 int main() {
-    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.ppm)");
-    Image<unsigned char>* img_2= ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.pgm)");
+    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
+    Image<unsigned char>* img_2= ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
 
     if (img == NULL) {
         std::cerr << "Error: Could not load image" << std::endl;
@@ -27,8 +27,8 @@ int main() {
     std::cout<<img->getChannel(0)->getMean()<<std::endl;
     img->getChannel(0)->threshold(128,0,255);*/
 
-    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.ppm)", *img);
-    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.pgm)", *img_2);
+    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.ppm)", *img);
+    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.pgm)", *img_2);
 
 
     delete img;

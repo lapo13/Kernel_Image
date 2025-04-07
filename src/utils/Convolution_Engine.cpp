@@ -8,10 +8,12 @@ void ConvolutionEngine<ImageType, KernelType>::convolve(Image<ImageType>& image,
     std::vector<std::thread> threads;
     threads.resize(numChannels);
 
+    int kernelSize = kernel.getRows();
+    int kernelRadius = kernelSize / 2;
+
     for (int c = 0; c < numChannels; ++c) {
-        threads[c] = std::thread([&image, &kernel, c]() {
-            int kernelSize = kernel.getRows();
-            int kernelRadius = kernelSize / 2;
+        threads[c] = std::thread([&image, &kernel, c, kernelRadius]() {
+
             int chRows = image.getChannel(c).getRows();
             int chCols = image.getChannel(c).getCols();
 

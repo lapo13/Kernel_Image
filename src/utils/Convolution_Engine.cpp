@@ -46,28 +46,14 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
             // Apply kernel - match image orientation
             for(int krow = -kernelRadius; krow <= kernelRadius; ++krow) {
                 for(int kcol = -kernelRadius; kcol <= kernelRadius; ++kcol) {
-                    std::cout << (static_cast<KernelType>(channel( col + kcol, row + krow))) << " * "
-                        << (kernel( kcol + kernelRadius, krow + kernelRadius)) << std::endl;
                     outputBuffer[row *chCols + col] += 
                         (static_cast<KernelType>(channel( col + kcol, row + krow))) *
                         (kernel( kcol + kernelRadius, krow + kernelRadius));
                     
                 }
             }
-            std::cout << "outputBuffer[" << row << "][" << col << "] = " 
-                        << outputBuffer[row *chCols + col] << std::endl;
-            std::cout << "-------------------------------"<< std::endl;
             minVal = (outputBuffer[row *chCols + col] < minVal) ? outputBuffer[row *chCols + col] : minVal;
             maxVal = (outputBuffer[row *chCols + col] > maxVal) ? outputBuffer[row *chCols + col] : maxVal;
-        }
-    }
-
-    // Process border pixels
-    for(int row = 0; row < chRows; ++row) {
-        for(int col = 0; col < chCols; ++col) {
-            if (row < kernelRadius || row >= chRows - kernelRadius || col < kernelRadius || col >= chCols - kernelRadius) {
-                outputBuffer[row *chCols + col] = 0; // Set border pixels to zero
-            }
         }
     }
 

@@ -4,7 +4,8 @@
 #include <iostream>
 
 int main() {
-    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.pgm)");
+    Image<unsigned char>* img = ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.ppm)");
+    Image<unsigned char>* img_2= ImageIO<unsigned char>::loadImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853.pgm)");
 
     if (img == NULL) {
         std::cerr << "Error: Could not load image" << std::endl;
@@ -17,6 +18,7 @@ int main() {
     Matrix<int> KE2 = ConvolutionEngine<unsigned char, int>::createEdgeDetectionKernel();
 
     ConvolutionEngine <unsigned char, float>::convolve(*img, KB);
+    ConvolutionEngine <unsigned char, float>::convolve(*img_2, KB);
 
     //img->getChannel(0)->normalize(0,255);
 
@@ -25,7 +27,9 @@ int main() {
     std::cout<<img->getChannel(0)->getMean()<<std::endl;
     img->getChannel(0)->threshold(128,0,255);*/
 
-    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.pgm)", *img);
+    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.ppm)", *img);
+    ImageIO<unsigned char>::saveImage(R"(/Users/lapotinacci/Documents/images/sample_1280×853_out.pgm)", *img_2);
+
 
     delete img;
     return 0;

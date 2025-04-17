@@ -45,7 +45,7 @@ TEST_F(ImageTest, GetPixel) {
 }
 
 TEST_F(ImageTest, SetPixel) {
-    unsigned char newPixel[3] = {100, 101, 102};
+    std::vector<unsigned char> newPixel = {100, 101, 102};
     image->setPixel(1, 1, newPixel);
     std::vector<unsigned char> pixel = image->getPixel(1, 1);
     EXPECT_EQ(pixel[0], 100);

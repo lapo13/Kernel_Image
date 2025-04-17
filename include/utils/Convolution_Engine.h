@@ -6,7 +6,7 @@
 #include <vector>
 
 template<typename ImageType, typename KernelType>
-class ConvolutionEngine {
+class ConvolutionEngine { //usare namespace ConvolutionEngine
 protected:
     ConvolutionEngine() = delete;  // Static class only
     
@@ -20,10 +20,11 @@ protected:
 public:
     // Basic convolution operation
     static void convolve(Image<ImageType>& image, const Matrix<KernelType>& kernel);
+    //usare un factory method per i kernel
     
     // Predefined kernels that return KernelType matrices
-    //static Matrix<KernelType> createGaussianKernel(int size, double sigma);
-    static Matrix<KernelType> createSharpenKernel();
+    static Matrix<KernelType> createGaussianKernel(int size, double sigma);
+    static Matrix<KernelType> createSharpenKernel(); 
     static Matrix<KernelType> createEmbossKernel();
     static Matrix<KernelType> createBlurringKernel();
     static Matrix<KernelType> createEdgeDetectionKernel();

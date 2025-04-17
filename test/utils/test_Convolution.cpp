@@ -2,7 +2,7 @@
 #include "utils/Convolution_Engine.h"
 #include "utils/ImageIO.h"
 
-class ConvolutionEngineTest : public ::testing::Test {
+class ConvolutionEngineTest : public ::testing::Test {  //rifere i test considerando delle immagini precalcolate 
 protected:
     Image<int>* image;
     Matrix<int> kernel;

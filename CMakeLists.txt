@@ -14,10 +14,7 @@ set(CMAKE_LINKER_FLAGS_DEBUG "-fsanitize=address,undefined")
 
 # Imposta dei nominativi per i file sorgente e header
 set (SOURCE 
-    src/core/Image.cpp
-    src/core/Matrix.cpp
     src/core/Channel.cpp
-    src/utils/ImageIO.cpp
     src/utils/Convolution_Engine.cpp
     )
 

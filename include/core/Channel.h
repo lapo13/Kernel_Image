@@ -4,7 +4,7 @@
 #include "Matrix.h"
 
 template <typename T>
-class Channel : public Matrix<T> {
+class Channel : public Matrix<T> { // fondere la classe Channel in Matrix
      private:
          unsigned char min, max;   
  

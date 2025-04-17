@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "utils/ImageIO.h"
-#include <fstream>
 
 class ImageIOTest : public ::testing::Test {
 protected:
@@ -29,10 +28,10 @@ protected:
 
 TEST_F(ImageIOTest, Load_and_Save_Image) {
      // Save the image to a file
-     ImageIO<unsigned char>::saveImage("test.ppm", *image);
+     ImageIO::saveImage<unsigned char>("test.ppm", *image);
 
      // Load the image from the file
-     Image<unsigned char>* loadedImage = ImageIO<unsigned char>::loadImage("test.ppm");
+     Image<unsigned char>* loadedImage = ImageIO::loadImage<unsigned char>("test.ppm");
 
      // Check if the loaded image is not null
      ASSERT_NE(loadedImage, nullptr);

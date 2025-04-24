@@ -31,19 +31,10 @@ namespace ImageIO
         header.numChannels = header.magicNumber == "P6" ? 3 : 1;
         file >> header.width >> header.height >> header.maxVal;
 
-        
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        
         const size_t bufferSize = header.width * header.height * header.numChannels;
-        T* imgBuffer = new T[bufferSize];
-        
-        if(imgBuffer == nullptr) {
-            std::cerr << "Error: Could not allocate memory for buffer of type: " 
-                    << typeid(T).name() << std::endl;
-            file.close();
-            exit(1);
-        }
+        T* imgBuffer = new T[bufferSize];  // Changed to raw array
 
         // Read file data into buffer
         file.read(reinterpret_cast<char*>(imgBuffer), bufferSize * sizeof(T));
@@ -53,7 +44,7 @@ namespace ImageIO
                     << typeid(T).name() << ". Expected " 
                     << bufferSize * sizeof(T) << " bytes but got " 
                     << file.gcount() << std::endl;
-            delete[] imgBuffer;
+            delete[] imgBuffer;  // Clean up before return
             file.close();
             return nullptr;
         }
@@ -62,8 +53,8 @@ namespace ImageIO
         
         // Create image with proper type
         Image<T>* img = new Image<T>(imgBuffer, header);
-        delete[] imgBuffer;  
         
+        delete[] imgBuffer;  // Clean up after image creation
         return img;
     }
 
@@ -85,22 +76,23 @@ namespace ImageIO
 
         // allocate buffer
         const size_t bufferSize = header.width * header.height * header.numChannels;
-        T* buffer = new T[bufferSize];  // Changed to T* from unsigned char*
+        T* buffer = new T[bufferSize];  // Changed back to raw array
 
         if(header.magicNumber == "P5") {
             size_t idx = 0;
+            std::vector<T> pixel(1);
             if (header.numChannels != 1) {
                 std::cerr << "Error: P5 format requires 1 channel" << std::endl;
-                delete[] buffer;
+                delete[] buffer;  // Clean up before return
                 file.close();
                 return;
             }
             for (int y = 0; y < header.height; ++y) {
                 for (int x = 0; x < header.width; ++x) {
-                    std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
+                    pixel = image.getPixel(x, y);  // Changed to vector<T>
                     if (pixel.size() != 1) {
                         std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
-                        delete[] buffer;
+                        delete[] buffer;  // Clean up before return
                         file.close();
                         return;
                     }
@@ -110,36 +102,42 @@ namespace ImageIO
         } 
         else if(header.magicNumber == "P6") {
             size_t idx = 0;
+            std::vector<T> pixel(3); 
             if (header.numChannels != 3) {
                 std::cerr << "Error: P6 format requires 3 channels" << std::endl;
-                delete[] buffer;
                 file.close();
                 return;
             }
             for (int y = 0; y < header.height; ++y) {
                 for (int x = 0; x < header.width; ++x) {
-                    std::vector<T> pixel = image.getPixel(x, y);  // Changed to vector<T>
+                    pixel = image.getPixel(x, y); 
                     if (pixel.size() != 3) {
                         std::cerr << "Error: Invalid pixel data at (" << x << "," << y << ")" << std::endl;
-                        delete[] buffer;
                         file.close();
                         return;
                     }
-                    buffer[idx++] = pixel[0];
-                    buffer[idx++] = pixel[1];
-                    buffer[idx++] = pixel[2];
+                    // Store pixel data in buffer
+                    if(idx < bufferSize) {
+                        buffer[idx++] = pixel[0];  // Red
+                        buffer[idx++] = pixel[1];  // Green
+                        buffer[idx++] = pixel[2];  // Blue
+                    } else {
+                        std::cerr << "Error: Buffer overflow at (" << x << "," << y << ")" << std::endl;
+                        delete[] buffer;  // Clean up before return
+                        file.close();
+                        return;
+                    }
                 }
             }
         } else {
             std::cerr << "Error: Invalid magic number " << header.magicNumber << std::endl;
-            delete[] buffer;
             file.close();
             return;
         }
 
         // Write exactly bufferSize bytes
-        file.write(reinterpret_cast<const char*>(buffer), bufferSize * sizeof(T));  // Added sizeof(T)
-        delete[] buffer;
+        file.write(reinterpret_cast<const char*>(buffer), bufferSize*sizeof(T)); 
+        delete[] buffer;  // Clean up after writing
         file.close();
     }
 };

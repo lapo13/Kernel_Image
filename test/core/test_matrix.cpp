@@ -45,15 +45,6 @@ TEST_F(MatrixTest, AccessElements) {
      EXPECT_EQ(matrix(3, 2), 12);
 }
 
-TEST_F(MatrixTest, ResizeMatrix) {
-    matrix.MatResize(5, 6);
-    EXPECT_EQ(matrix.getRows(), 5);
-    EXPECT_EQ(matrix.getCols(), 6);
-    EXPECT_EQ(matrix(0, 0), 1);
-    EXPECT_EQ(matrix(1, 2), 10);
-    EXPECT_EQ(matrix(5, 4), 0); // New elements should be initialized to 0
-}
-
 TEST_F(MatrixTest, OutOfBoundsAccess) {
     EXPECT_THROW(matrix(5, 7), std::out_of_range);
     EXPECT_THROW(matrix(0, 5), std::out_of_range);

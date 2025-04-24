@@ -47,7 +47,7 @@ void ConvolutionEngine<ImageType, KernelType>::convolve(Image<ImageType>& image,
         }
 
 template<typename ImageType, typename KernelType>
-void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& channel, const Matrix<KernelType>& kernel, int kernelRadius, KernelType* outputBuffer) {
+void ConvolutionEngine<ImageType, KernelType>::applyKernel(Matrix<ImageType>& channel, const Matrix<KernelType>& kernel, int kernelRadius, KernelType* outputBuffer) {
     int chRows = channel.getRows();
     int chCols = channel.getCols();
 
@@ -69,7 +69,7 @@ void ConvolutionEngine<ImageType, KernelType>::applyKernel(Channel<ImageType>& c
 }
 
 template<typename ImageType, typename KernelType>
-void ConvolutionEngine<ImageType, KernelType>::normalizeResults(KernelType* outputBuffer, const Channel<ImageType>& channel, int kernelRadius) {
+void ConvolutionEngine<ImageType, KernelType>::normalizeResults(KernelType* outputBuffer, const Matrix<ImageType>& channel, int kernelRadius) {
     int chCols = channel.getCols();
     int chRows = channel.getRows();
     double max = static_cast<double>(channel.getMax()); 

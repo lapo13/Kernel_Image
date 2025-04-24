@@ -14,14 +14,12 @@ set(CMAKE_LINKER_FLAGS_DEBUG "-fsanitize=address,undefined")
 
 # Imposta dei nominativi per i file sorgente e header
 set (SOURCE 
-    src/core/Channel.cpp
     src/utils/Convolution_Engine.cpp
     )
 
 set(HEADER
     include/core/Image.h
     include/core/Matrix.h
-    include/core/Channel.h
     include/utils/ImageIO.h
     include/ImageHeader.h
     include/utils/Convolution_Engine.h

@@ -53,10 +53,3 @@ TEST_F(ImageTest, SetPixel) {
     EXPECT_EQ(pixel[2], 102);
 }
 
-TEST_F(ImageTest, Resize) {
-    image->resize(2, 2);
-    EXPECT_EQ(image->getWidth(), 2);
-    EXPECT_EQ(image->getHeight(), 2);
-    EXPECT_THROW(image->getPixel(3, 3), std::out_of_range);
-}
-

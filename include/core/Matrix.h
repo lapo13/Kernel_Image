@@ -14,6 +14,10 @@ public:
         data.resize(rows * cols);
     }  
 
+    Matrix(const T* imgBuffer, int width, int height): rows(height), cols(width) { 
+        data = std::vector<T>(imgBuffer, imgBuffer + width * height);
+    }
+
     T& operator()(int x, int y) {
         if (x < 0 || x >= cols || y < 0 || y >= rows) {
             throw std::out_of_range("Matrix index out of range");
@@ -27,27 +31,45 @@ public:
         return data[y* cols + x]; 
     }
 
+    T getMax() const {
+    T max = (*this)(0, 0);
+        for(int i = 0; i < this->rows; ++i) {
+            for(int j = 0; j < this->cols; ++j) {
+                if((*this)(j, i) > max) {
+                    max = (*this)(j, i);
+                }
+            }
+        }
+        return max;
+    };
+
+    T getMin() const {
+        T min = (*this)(0, 0);
+        for(int i = 0; i < this->rows; ++i) {
+            for(int j = 0; j < this->cols; ++j) {
+                if((*this)(j, i) < min) {
+                    min = (*this)(j, i);
+                }
+            }
+        }
+        return min;
+    };
+
+    double getMean() const {
+        double sum = 0;
+        for(int i = 0; i < this->getRows(); ++i) {
+            for(int j = 0; j < this->getCols(); ++j) {
+                sum += (double)((*this)(j, i));
+            }
+        }
+        return (sum / (this->getRows() * this->getCols()));
+    };
+
     int getRows() const {
         return rows;
     }
     int getCols() const {
         return cols;
-    }
-
-    void MatResize(int rows, int cols) {
-        std::vector<T> newData(rows * cols);
-        for(int i = 0; i < rows; ++i) {
-            for(int j = 0; j < cols; ++j) {
-                if (i < this->rows && j < this->cols) {
-                    newData[i * cols + j] = data[i * this->cols + j];
-                } else {
-                    newData[i * cols + j] = 0;
-                }
-            }
-        }
-        this->rows = rows;
-        this->cols = cols;
-        data = newData;
     }
 
     ~Matrix() {

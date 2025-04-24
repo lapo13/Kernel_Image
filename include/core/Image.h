@@ -1,34 +1,46 @@
 #ifndef IMAGE_H
 #define IMAGE_H
-#include "Channel.h"
+#include "Matrix.h"
 #include "ImageHeader.h"
 #include <vector>
 
 
 template <typename T>
-class Image {
+class Image { // da fare refactor con image interface e factory per creare immagini a 1 o 3 canali
 
 private:
     ImageHeader header;
-    std::vector<Channel<T>*> channels;
+    std::vector<Matrix<T>*> channels;
 
 public:
-    Image(T* imgBuffer, ImageHeader header): header(header) {
+    Image(const T* imgBuffer, ImageHeader header): header(header) {
+        channels.reserve(header.numChannels);
         if (header.numChannels == 1) {
-            channels.push_back(new Channel(imgBuffer, header.width , header.height));
+            channels.push_back(new Matrix(imgBuffer, header.width , header.height));
         } else {
-            for (int i = 0; i < header.numChannels; ++i) {
-                channels.push_back(new Channel(imgBuffer, header.width , header.height, i));
+            T* rBuffer = new T[header.width * header.height];
+            T* gBuffer = new T[header.width * header.height];
+            T* bBuffer = new T[header.width * header.height];
+            for (int i = 0; i < header.height*header.width; ++i) {
+                rBuffer[i] = imgBuffer[i*header.numChannels];
+                gBuffer[i] = imgBuffer[i*header.numChannels + 1];
+                bBuffer[i] = imgBuffer[i*header.numChannels + 2];
             }
+            channels.insert(channels.begin(), new Matrix(rBuffer, header.width, header.height));
+            channels.insert(channels.begin() + 1, new Matrix(gBuffer, header.width, header.height));
+            channels.insert(channels.begin() + 2, new Matrix(bBuffer, header.width, header.height));
+            delete[] rBuffer;
+            delete[] gBuffer;
+            delete[] bBuffer;
         }
     }
 
-    Channel<T>& getChannel(int channel){
+    Matrix<T>& getChannel(int channel){
         return *channels[channel];
     }
 
-    void setChannel(int channel, const Channel<T>& data){
-        *channels[channel] = data;
+    void setChannel(int channel, const Matrix<T>& data){
+        channels[channel] = data;
     }
 
     void setPixel(int x, int y, std::vector<T> pixel){
@@ -38,7 +50,7 @@ public:
         }
 
         for (int i = 0; i < header.numChannels; ++i) {
-            channels[i]->operator()(x, y) = pixel[i];
+            channels.at(i)->operator()(x, y) = pixel[i];
         }
     }
     const std::vector<T> getPixel(int x, int y){
@@ -49,17 +61,9 @@ public:
 
         std::vector<T> pixel(header.numChannels);
         for (int i = 0; i < header.numChannels; ++i) {
-            pixel[i] = channels[i]->operator()(x, y);  // Note: Channel uses (row,col) order
+            pixel[i] = channels.at(i)->operator()(x, y);
         }
         return pixel;
-    }
-
-    void resize(unsigned int width, unsigned int height){
-        for (int i = 0; i < header.numChannels; ++i) {
-            channels[i]->MatResize(height, width);
-        }
-        this->header.width = width;
-        this->header.height = height;
     }
 
     int getWidth() const {

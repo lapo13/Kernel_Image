@@ -2,7 +2,6 @@
 #define CONVOLUTION_ENGINE_H
 
 #include "core/Image.h"
-#include "core/Matrix.h"
 #include <vector>
 
 template<typename ImageType, typename KernelType>
@@ -11,9 +10,9 @@ protected:
     ConvolutionEngine() = delete;  // Static class only
     
     // Helper method to apply kernel to a single channel
-    static void applyKernel(Channel<ImageType>& channel, const Matrix<KernelType>& kernel, int kernelRadius, KernelType* outputBuffer);
+    static void applyKernel(Matrix<ImageType>& channel, const Matrix<KernelType>& kernel, int kernelRadius, KernelType* outputBuffer);
     // Helper to normalize results
-    static void normalizeResults(KernelType* outputBuffer, const Channel<ImageType>& channel, int kernelRadius);
+    static void normalizeResults(KernelType* outputBuffer, const Matrix<ImageType>& channel, int kernelRadius);
     //helper fo checking kernel validity
     static bool isValid(Matrix<KernelType> kernel);
 

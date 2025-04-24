@@ -18,7 +18,6 @@ message(STATUS "GTest libraries: ${GTEST_LIBRARIES}")
 set(TEST_SOURCES
     core/test_Image.cpp
     core/test_Matrix.cpp
-    core/test_Channel.cpp
     utils/test_ImageIO.cpp
     utils/test_Convolution.cpp
 )

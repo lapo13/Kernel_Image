@@ -7,11 +7,7 @@ int main() {
 
     Image<unsigned char>* img = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
     Image<unsigned char>* img_2 = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
-
-    if (img == NULL) {
-        std::cerr << "Error: Could not load image" << std::endl;
-        return 1;
-    }
+    std::cout<<"Image loaded"<<std::endl;
 
     Matrix<int> KS = ConvolutionEngine<unsigned char, int>::createSharpenKernel();
     Matrix<int> KE = ConvolutionEngine<unsigned char, int>::createEmbossKernel();
@@ -20,6 +16,7 @@ int main() {
 
     ConvolutionEngine <unsigned char, float>::convolve(*img, KB);
     ConvolutionEngine <unsigned char, float>::convolve(*img_2, KB);
+    std::cout<<"Convolution done"<<std::endl;
 
     //img->getChannel(0)->normalize(0,255);
 
@@ -30,6 +27,7 @@ int main() {
 
     ImageIO::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.ppm)", *img);
     ImageIO::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.pgm)", *img_2);
+    std::cout<<"Image saved"<<std::endl;
 
     delete img;
     img = nullptr;

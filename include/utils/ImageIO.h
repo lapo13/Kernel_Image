@@ -13,6 +13,7 @@ namespace ImageIO
     template<typename T>
     Image<T>* loadImage(const std::string& filename) {
         ImageHeader header;
+        imageFactory<T> factory;
         std::ifstream file(filename, std::ios::binary);
         if (!file.is_open()) {
             std::cerr << "Error: Could not open file " << filename << std::endl;
@@ -52,7 +53,7 @@ namespace ImageIO
         file.close();
         
         // Create image with proper type
-        Image<T>* img = new Image<T>(imgBuffer, header);
+        Image<T>* img = factory.createImage(imgBuffer, header);
         
         delete[] imgBuffer;  // Clean up after image creation
         return img;

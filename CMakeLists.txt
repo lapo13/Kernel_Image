@@ -12,10 +12,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address,undefined -fno-omit-frame-pointer")
 set(CMAKE_LINKER_FLAGS_DEBUG "-fsanitize=address,undefined")
 
-# Imposta dei nominativi per i file sorgente e header
-set (SOURCE 
-    src/utils/Convolution_Engine.cpp
-    )
+# Imposta dei nominativi per i file header
 
 set(HEADER
     include/core/Image.h
@@ -26,15 +23,9 @@ set(HEADER
 )
 
 # Crea la libreria kernel_image
-add_library(kernel_image
-        ${SOURCE}
-        ${HEADER}
-)
-
-# Linka la libreria kernel_image con le librerie necessarie
-target_include_directories(kernel_image PUBLIC
+add_library(kernel_image INTERFACE)
+target_include_directories(kernel_image INTERFACE
         ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/src
 )
 
 # Eseguibile principale

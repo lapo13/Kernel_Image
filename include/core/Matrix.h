@@ -10,6 +10,7 @@ private:
     int rows, cols;
 
 public:
+    // Default constructor used only for testing purposes
     Matrix(int rows = 2, int cols = 2) : rows(rows), cols(cols) {
         data.resize(rows * cols);
     }  

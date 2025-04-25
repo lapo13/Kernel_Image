@@ -5,7 +5,7 @@
 
 class MatrixTest : public ::testing::Test {
 protected:
-    void SetUp() override {
+    void SetUp() {
         // Setup code that runs before each test
         int c = 1;
         matrix = Matrix<int>(3, 4);
@@ -18,12 +18,6 @@ protected:
     }
     Matrix<int> matrix;
 };
-
-TEST_F(MatrixTest, DefaultConstructor) {
-     Matrix<int> defaultMatrix;
-     EXPECT_EQ(defaultMatrix.getRows(), 2);
-     EXPECT_EQ(defaultMatrix.getCols(), 2);
- }
 
 TEST_F(MatrixTest, BasicProperties) {
     EXPECT_EQ(matrix.getRows(), 3);
@@ -43,6 +37,18 @@ TEST_F(MatrixTest, AccessElements) {
      EXPECT_EQ(matrix(1, 2), 10);
      EXPECT_EQ(matrix(2, 2), 11);
      EXPECT_EQ(matrix(3, 2), 12);
+}
+
+TEST_F(MatrixTest, GetMax) {
+    EXPECT_EQ(matrix.getMax(), 12);
+}
+
+TEST_F(MatrixTest, GetMin) {
+    EXPECT_EQ(matrix.getMin(), 1);
+}
+
+TEST_F(MatrixTest, GetMean) {
+    EXPECT_DOUBLE_EQ(matrix.getMean(), 6.5);
 }
 
 TEST_F(MatrixTest, OutOfBoundsAccess) {

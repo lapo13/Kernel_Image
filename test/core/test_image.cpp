@@ -8,21 +8,25 @@ protected:
     unsigned char* imgBuffer;
     Image<unsigned char>* image;
 
-    void SetUp() override {
+     void SetUp() {
           header.width = 4;
           header.height = 4;
           header.numChannels = 3;
           header.maxVal = 255;
           header.magicNumber = "P6";
+
           imgBuffer = new unsigned char[header.width * header.height * header.numChannels];
           for (int i = 0; i < header.width * header.height * header.numChannels; ++i) {
                imgBuffer[i] = static_cast<unsigned char>(i);
           }
-          image = new Image<unsigned char>(imgBuffer, header);
-     }
-     void TearDown() override {
+          imageFactory<unsigned char> factory;
+          image = factory.createImage(imgBuffer, header);
+      }
+     void TearDown() {
           delete[] imgBuffer;
+          imgBuffer = nullptr;
           delete image;
+          image = nullptr;
      }
 };
 

@@ -7,7 +7,7 @@ protected:
     unsigned char* imgBuffer;
     Image<unsigned char>* image;
 
-    void SetUp() override {
+    void SetUp() {
         header.width = 4;
         header.height = 4;
         header.numChannels = 3;
@@ -17,10 +17,11 @@ protected:
         for (int i = 0; i < header.width * header.height * header.numChannels; ++i) {
             imgBuffer[i] = static_cast<unsigned char>(i);
         }
-        image = new Image<unsigned char>(imgBuffer, header);
+        imageFactory<unsigned char> factory;
+        image = factory.createImage(imgBuffer, header);
     }
 
-    void TearDown() override {
+    void TearDown() {
         delete[] imgBuffer;
         delete image;
     }

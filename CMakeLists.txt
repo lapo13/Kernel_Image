@@ -19,7 +19,7 @@ set(HEADER
     include/core/Matrix.h
     include/utils/ImageIO.h
     include/ImageHeader.h
-    include/utils/Convolution_Engine.h
+    include/utils/Convolution.h
 )
 
 # Crea la libreria kernel_image

@@ -1,6 +1,6 @@
 #include "core/Image.h"
 #include "utils/ImageIO.h"
-#include "utils/Convolution_Engine.h"
+#include "utils/Convolution.h"
 #include <iostream>
 
 int main() {
@@ -9,21 +9,13 @@ int main() {
     Image<unsigned char>* img_2 = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
     std::cout<<"Image loaded"<<std::endl;
 
-    Matrix<int> KS = ConvolutionEngine<unsigned char, int>::createSharpenKernel();
-    Matrix<int> KE = ConvolutionEngine<unsigned char, int>::createEmbossKernel();
-    Matrix<float> KB = ConvolutionEngine<unsigned char, float>::createBlurringKernel();
-    Matrix<int> KE2 = ConvolutionEngine<unsigned char, int>::createEdgeDetectionKernel();
+    Matrix<float> kernel = Convolution::createKernel<float>(Convolution::KernelType::Sharpen);
+    Matrix<float> kernel_2 = Convolution::createKernel<float>(Convolution::KernelType::Emboss);
+    std::cout<<"Kernel created"<<std::endl;
 
-    ConvolutionEngine <unsigned char, float>::convolve(*img, KB);
-    ConvolutionEngine <unsigned char, float>::convolve(*img_2, KB);
+    Convolution::convolve(*img, kernel_2);
+    Convolution::convolve(*img_2, kernel_2);
     std::cout<<"Convolution done"<<std::endl;
-
-    //img->getChannel(0)->normalize(0,255);
-
-    /*std::cout<<(int)img->getChannel(0)->getMin()<<std::endl;
-    std::cout<<(int)img->getChannel(0)->getMax()<<std::endl;
-    std::cout<<img->getChannel(0)->getMean()<<std::endl;
-    img->getChannel(0)->threshold(128,0,255);*/
 
     ImageIO::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.ppm)", *img);
     ImageIO::saveImage(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.pgm)", *img_2);

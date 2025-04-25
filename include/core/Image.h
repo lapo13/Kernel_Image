@@ -27,9 +27,6 @@ private:
 
 public:
     imageGrayScale(const T* imgBuffer, ImageHeader header): header(header) {
-        if (header.numChannels != 1) {
-            throw std::invalid_argument("Image must have 1 channel for grayscale");
-        }
         channel = new Matrix<T>(header.height, header.width);
         size_t idx = 0;
         for (int y = 0; y < header.height; ++y) {
@@ -46,7 +43,6 @@ public:
         }
         return *channel;
     }
-
     void setChannel(int chNum, const Matrix<T>& data) override{
         if (chNum != 1) {
             throw std::invalid_argument("Invalid channel index for grayscale image in setChannel");
@@ -59,7 +55,9 @@ public:
         if (((x >= header.width )||(y >= header.height)) && (static_cast<int>(pixel.size()) != header.numChannels)) {
             throw std::out_of_range("Pixel coordinates out of bounds or pixel size mismatch");
         }
-        channel->operator()(x, y) = pixel[0];
+        for (int i = 0; i < header.numChannels; ++i) {
+            channel->operator()(x, y) = pixel[i];
+        }
     }
     const std::vector<T> getPixel(int x, int y) override{
         // Check bounds
@@ -80,7 +78,6 @@ public:
     int getNumChannels() const override{
         return this->header.numChannels;
     }
-
     const ImageHeader& getHeader() const override{
         return this->header;
     }
@@ -97,9 +94,6 @@ private:
     std::vector<Matrix<T>*> channels;
 public:
     imageRGB(const T* imgBuffer, ImageHeader header): header(header) {
-        if (header.numChannels != 3) {
-            throw std::invalid_argument("Image must have 3 channels for RGB");
-        }
         for (int i = 0; i < header.numChannels; ++i) {
             channels.push_back(new Matrix<T>(header.height, header.width));
         }
@@ -134,7 +128,7 @@ public:
         }
 
         for (int i = 0; i < header.numChannels; ++i) {
-            channels.at(i)->operator()(x, y) = pixel[i];
+            channels.at(i)->operator()(x, y) = pixel.at(i);
         }
     }
 
@@ -166,7 +160,7 @@ public:
     }
 
     ~imageRGB(){
-        for(auto channel : channels) {
+        for(Matrix<T>* channel : channels) {
             delete channel;
         }
     }

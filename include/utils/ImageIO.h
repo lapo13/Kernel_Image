@@ -29,18 +29,18 @@ namespace ImageIO {
     } // namespace detail
 
     template<typename T>
-    Image<T>* loadImage(const std::string& filename) {
+    monoImage<T>* loadGrayImage(const std::string& filename) {
         ImageHeader header;
-        imageFactory<T> factory;
+        monoChannelImage<T> monoChannelImage;
         std::ifstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
 
         // Leggi header
         file >> header.magicNumber;
-        if (header.magicNumber != "P6" && header.magicNumber != "P5") {
+        if (header.magicNumber != "P5") {
             throw std::runtime_error("Error: File not supported");
         }
-        header.numChannels = header.magicNumber == "P6" ? 3 : 1;
+        header.numChannels = 1; // PGM ha un solo canale
         file >> header.width >> header.height >> header.maxVal;
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -56,13 +56,65 @@ namespace ImageIO {
         file.close();
 
         // Crea immagine
-        Image<T>* img = factory.createImage(imgBuffer, header);
+        Matrix<T>* channel = new Matrix<T>(header.height, header.width);
+        size_t idx = 0;
+        for (int y = 0; y < header.height; ++y) {
+            for (int x = 0; x < header.width; ++x) {
+                (*channel)(x, y) = imgBuffer[idx++];
+            }
+        }
+        monoImage<T>* img = monoChannelImage.createImage(channel, header);
         detail::safeDeleteBuffer(imgBuffer);
         return img;
     }
 
     template<typename T>
-    void saveImage(const std::string& filename, Image<T>& image) {
+    multiImage<T>* loadRGBImage(const std::string& filename) {
+        ImageHeader header;
+        multiChannelImage<T> multiChannelImage;
+        std::ifstream file(filename, std::ios::binary);
+        detail::checkFileOpen(file, filename);
+
+        // Leggi header
+        file >> header.magicNumber;
+        if (header.magicNumber != "P6") {
+            throw std::runtime_error("Error: File not supported");
+        }
+        header.numChannels = 3; // PPM ha tre canali
+        file >> header.width >> header.height >> header.maxVal;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+         // Leggi dati immagine
+        const size_t bufferSize = header.width * header.height * header.numChannels;
+        T* imgBuffer = new T[bufferSize];
+        file.read(reinterpret_cast<char*>(imgBuffer), bufferSize * sizeof(T));
+        if (file.gcount() != static_cast<std::streamsize>(bufferSize * sizeof(T))) {
+            detail::safeDeleteBuffer(imgBuffer);
+            throw std::runtime_error("Error: Could not read complete image data");
+            file.close();
+        }
+
+        // Crea immagine
+        std::vector<Matrix<T>*> channels(header.numChannels);
+        for (int i = 0; i < header.numChannels; ++i) {
+            channels[i] = new Matrix<T>(header.height, header.width);
+        }
+        size_t idx = 0;
+        for (int y = 0; y < header.height; ++y) {
+            for (int x = 0; x < header.width; ++x) {
+                for (int c = 0; c < header.numChannels; ++c) {
+                    (*channels[c])(x, y) = imgBuffer[idx++];
+                }
+            }
+        }
+        multiImage<T>* img = multiChannelImage.createImage(channels, header);
+        detail::safeDeleteBuffer(imgBuffer);
+        return img;
+    }
+
+
+    template<typename T>
+    void saveImage(const std::string& filename, multiImage<T>& image) {
         std::ofstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
 
@@ -90,6 +142,27 @@ namespace ImageIO {
         file.close();
     }
 
-} // namespace ImageIO
+    template<typename T>
+    void saveImage(const std::string& filename, monoImage<T>& image) {
+        std::ofstream file(filename, std::ios::binary);
+        detail::checkFileOpen(file, filename);
+        ImageHeader header = image.getHeader();
+        file << header.magicNumber << "\n";
+        file << header.width << " " << header.height << "\n";
+        file << header.maxVal << "\n";
+        const size_t bufferSize = header.width * header.height * header.numChannels;
+        T* buffer = new T[bufferSize];
+        size_t idx = 0;
+        for (int y = 0; y < header.height; ++y) {
+            for (int x = 0; x < header.width; ++x) {
+                buffer[idx++] = image.getPixel(x, y);
+            }
+        }
+        file.write(reinterpret_cast<const char*>(buffer), bufferSize * sizeof(T));
+        detail::safeDeleteBuffer(buffer);
+        file.close();
+    }
+
+} 
 
 #endif // IMAGEIO_H

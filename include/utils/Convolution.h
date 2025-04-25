@@ -132,9 +132,9 @@ namespace Convolution {
 
     }
 
-    // Basic convolution operation
+    // Basic convolution operation for multi-channel images
     template<typename ImageType, typename KernelType>
-    void convolve(Image<ImageType>& image, const Matrix<KernelType>& kernel) {
+    void convolve(multiImage<ImageType>& image, const Matrix<KernelType>& kernel) {
         int numChannels = image.getNumChannels();
         std::vector<std::thread> threads;
         threads.resize(numChannels);
@@ -180,6 +180,35 @@ namespace Convolution {
         threads.clear();
     }
 
+    // Convolution function for single-channel images
+    template<typename ImageType, typename KernelType>
+    void convolve(monoImage<ImageType>& image, const Matrix<KernelType>& kernel) {
+        int kernelSize = kernel.getRows();
+        int kernelRadius = kernelSize / 2;
+
+        KernelType* outputBuffer = new KernelType[image.getHeight() * image.getWidth()];
+        for (int i = 0; i < image.getHeight() * image.getWidth(); ++i) {
+            outputBuffer[i] = 0;
+        }
+
+        // Apply the kernel to the channel
+        detail::applyKernel(image.getChannel(), kernel, kernelRadius, outputBuffer);
+
+        // Normalize the results
+        detail::normalizeResults(outputBuffer, image.getChannel(), kernelRadius);
+
+        // Update the channel with the new values
+        for(int row = kernelRadius; row < image.getHeight() - kernelRadius; ++row) {
+            for(int col = kernelRadius; col < image.getWidth() - kernelRadius; ++col) {
+                (image.getChannel())(col, row) = static_cast<ImageType>(outputBuffer[row * image.getWidth() + col]);
+            }
+        }
+
+        // Clean up
+        delete[] outputBuffer;
+        outputBuffer = nullptr;
+    }
+
     template<typename T>
     Matrix<T> createKernel(KernelType type) {
         switch(type) {
@@ -194,8 +223,7 @@ namespace Convolution {
             default:
                 throw std::invalid_argument("Unknown kernel type");
         }
-    }
+    };
 
-} // namespace ConvolutionEngine
-
+}   // namespace ConvolutionEngine;
 #endif // CONVOLUTION_ENGINE_H

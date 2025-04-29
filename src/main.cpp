@@ -5,8 +5,8 @@
 
 int main() {
 
-    multiImage<unsigned char>* img = ImageIO::loadRGBImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
-    monoImage<unsigned char>* img_2 = ImageIO::loadGrayImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
+    MultiChannelImage<unsigned char>* img = ImageIO::loadRGBImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
+    SingleChannelImage<unsigned char>* img_2 = ImageIO::loadGrayImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
     std::cout<<"Image loaded"<<std::endl;
 
     Matrix<float> kernel = Convolution::createKernel<float>(Convolution::KernelType::Sharpen);

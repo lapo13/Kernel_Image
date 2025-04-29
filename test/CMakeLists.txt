@@ -16,7 +16,8 @@ message(STATUS "GTest libraries: ${GTEST_LIBRARIES}")
 
 # File di test (solo header e main)
 set(TEST_SOURCES
-    core/test_Image.cpp
+    core/test_ImageRGB.cpp
+    core/test_ImageGray.cpp
     core/test_Matrix.cpp
     utils/test_ImageIO.cpp
     utils/test_Convolution.cpp

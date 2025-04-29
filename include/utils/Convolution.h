@@ -134,7 +134,7 @@ namespace Convolution {
 
     // Basic convolution operation for multi-channel images
     template<typename ImageType, typename KernelType>
-    void convolve(multiImage<ImageType>& image, const Matrix<KernelType>& kernel) {
+    void convolve(MultiChannelImage<ImageType>& image, const Matrix<KernelType>& kernel) {
         int numChannels = image.getNumChannels();
         std::vector<std::thread> threads;
         threads.resize(numChannels);
@@ -182,7 +182,7 @@ namespace Convolution {
 
     // Convolution function for single-channel images
     template<typename ImageType, typename KernelType>
-    void convolve(monoImage<ImageType>& image, const Matrix<KernelType>& kernel) {
+    void convolve(SingleChannelImage<ImageType>& image, const Matrix<KernelType>& kernel) {
         int kernelSize = kernel.getRows();
         int kernelRadius = kernelSize / 2;
 

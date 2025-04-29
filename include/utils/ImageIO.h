@@ -29,9 +29,8 @@ namespace ImageIO {
     } // namespace detail
 
     template<typename T>
-    monoImage<T>* loadGrayImage(const std::string& filename) {
+    SingleChannelImage<T>* loadGrayImage(const std::string& filename) {
         ImageHeader header;
-        monoChannelImage<T> monoChannelImage;
         std::ifstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
 
@@ -63,15 +62,14 @@ namespace ImageIO {
                 (*channel)(x, y) = imgBuffer[idx++];
             }
         }
-        monoImage<T>* img = monoChannelImage.createImage(channel, header);
+        SingleChannelImage<T>* img = new GrayscaleImage<T>(channel, header);
         detail::safeDeleteBuffer(imgBuffer);
         return img;
     }
 
     template<typename T>
-    multiImage<T>* loadRGBImage(const std::string& filename) {
+    MultiChannelImage<T>* loadRGBImage(const std::string& filename) {
         ImageHeader header;
-        multiChannelImage<T> multiChannelImage;
         std::ifstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
 
@@ -107,14 +105,14 @@ namespace ImageIO {
                 }
             }
         }
-        multiImage<T>* img = multiChannelImage.createImage(channels, header);
+        MultiChannelImage<T>* img = new ImageRGB<T>(channels, header);
         detail::safeDeleteBuffer(imgBuffer);
         return img;
     }
 
 
     template<typename T>
-    void saveImage(const std::string& filename, multiImage<T>& image) {
+    void saveImage(const std::string& filename, MultiChannelImage<T>& image) {
         std::ofstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
 
@@ -143,7 +141,7 @@ namespace ImageIO {
     }
 
     template<typename T>
-    void saveImage(const std::string& filename, monoImage<T>& image) {
+    void saveImage(const std::string& filename, SingleChannelImage<T>& image) {
         std::ofstream file(filename, std::ios::binary);
         detail::checkFileOpen(file, filename);
         ImageHeader header = image.getHeader();

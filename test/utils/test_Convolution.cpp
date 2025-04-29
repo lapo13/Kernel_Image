@@ -5,18 +5,18 @@
 
 class ConvolutionEngineTest : public ::testing::Test {  //rifere i test considerando delle immagini precalcolate 
 protected:
-    Image<unsigned char>* preCalculatedImage;
-    Image<unsigned char>* preCalculatedImage_2;
-    Image<unsigned char>* testImage;
-    Image<unsigned char>* testImage_2;
+    MultiChannelImage<unsigned char>* preCalculatedImage;
+    SingleChannelImage<unsigned char>* preCalculatedImage_2;
+    MultiChannelImage<unsigned char>* testImage;
+    SingleChannelImage<unsigned char>* testImage_2;
     Matrix<float> kernel;
 
     void SetUp() {
-        preCalculatedImage = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.ppm)");
-        preCalculatedImage_2 = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.pgm)");
-        testImage = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
-        testImage_2 = ImageIO::loadImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
-        kernel = Convolution::createKernel<float>(Convolution::KernelType::Emboss);
+        preCalculatedImage = ImageIO::loadRGBImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.ppm)");
+        preCalculatedImage_2 = ImageIO::loadGrayImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/output/sample_1280×853_out.pgm)");
+        testImage = ImageIO::loadRGBImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.ppm)");
+        testImage_2 = ImageIO::loadGrayImage<unsigned char>(R"(/Users/lapotinacci/Documents/Kernel_Image/images/input/sample_1280×853.pgm)");
+        kernel = Convolution::createKernel<float>(Convolution::KernelType::Blur);
     }
     void TearDown() {
         delete testImage;
@@ -47,7 +47,7 @@ TEST_F(ConvolutionEngineTest, Convolve) {
     // Check if the convolution result matches the pre-calculated image
     for (int row = 0; row < preCalculatedImage_2->getHeight(); ++row) {
         for (int col = 0; col < preCalculatedImage_2->getWidth(); ++col) {
-            EXPECT_EQ(testImage_2->getChannel(0)(col, row), preCalculatedImage_2->getChannel(0)(col, row));
+            EXPECT_EQ(testImage_2->getChannel()(col, row), preCalculatedImage_2->getChannel()(col, row));
         }
     }
 }

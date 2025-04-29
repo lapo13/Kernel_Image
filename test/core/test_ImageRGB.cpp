@@ -2,11 +2,11 @@
 #include "core/Image.h"
 
 
-class ImageTest : public ::testing::Test {
+class ImageRGBTest : public ::testing::Test {
 protected:
     ImageHeader header;
     unsigned char* imgBuffer;
-    Image<unsigned char>* image;
+    MultiChannelImage<unsigned char>* image;
 
      void SetUp() {
           header.width = 4;
@@ -19,8 +19,20 @@ protected:
           for (int i = 0; i < header.width * header.height * header.numChannels; ++i) {
                imgBuffer[i] = static_cast<unsigned char>(i);
           }
-          imageFactory<unsigned char> factory;
-          image = factory.createImage(imgBuffer, header);
+          // Create a MultiChannelImage object
+          std::vector<Matrix<unsigned char>*> channels(header.numChannels);
+          for (int i = 0; i < header.numChannels; ++i) {
+               channels[i] = new Matrix<unsigned char>(header.height, header.width);
+          }
+          size_t idx = 0;
+          for (int y = 0; y < header.height; ++y) {
+               for (int x = 0; x < header.width; ++x) {
+                    for (int c = 0; c < header.numChannels; ++c) {
+                         (*channels[c])(x, y) = imgBuffer[idx++];
+                    }
+               }
+          }
+          image = new ImageRGB<unsigned char>(channels, header);
       }
      void TearDown() {
           delete[] imgBuffer;
@@ -30,7 +42,7 @@ protected:
      }
 };
 
-TEST_F(ImageTest, Constructor) {
+TEST_F(ImageRGBTest, Constructor) {
      EXPECT_EQ(image->getWidth(), 4);
      EXPECT_EQ(image->getHeight(), 4);
      EXPECT_EQ(image->getNumChannels(), 3);
@@ -41,19 +53,25 @@ TEST_F(ImageTest, Constructor) {
      EXPECT_EQ(image->getHeader().magicNumber, "P6");
 }
 
-TEST_F(ImageTest, GetPixel) {
+TEST_F(ImageRGBTest, GetPixel) {
     std::vector<unsigned char> pixel = image->getPixel(1, 1);
     EXPECT_EQ(pixel[0], 15); // Channel 0
     EXPECT_EQ(pixel[1], 16); // Channel 1
     EXPECT_EQ(pixel[2], 17); // Channel 2
 }
 
-TEST_F(ImageTest, SetPixel) {
+TEST_F(ImageRGBTest, SetPixel) {
     std::vector<unsigned char> newPixel = {100, 101, 102};
     image->setPixel(1, 1, newPixel);
     std::vector<unsigned char> pixel = image->getPixel(1, 1);
     EXPECT_EQ(pixel[0], 100);
     EXPECT_EQ(pixel[1], 101);
     EXPECT_EQ(pixel[2], 102);
+}
+
+TEST_F(ImageRGBTest, OutOfBounds) {
+    std::vector<unsigned char> newPixel = {100, 101, 102};
+    EXPECT_THROW(image->setPixel(5, 5, newPixel), std::out_of_range);
+    EXPECT_THROW(image->getPixel(5, 5), std::out_of_range);
 }
 

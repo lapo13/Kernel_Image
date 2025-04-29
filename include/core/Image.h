@@ -4,9 +4,9 @@
 #include "ImageHeader.h"
 #include <vector>
 template <typename T>
-class multiImage{
+class MultiChannelImage{
 public:
-    virtual ~multiImage() = default;
+    virtual ~MultiChannelImage() = default;
     virtual Matrix<T>& getChannel(int chNum) = 0;
     virtual void setChannel(int chNum, const Matrix<T>& data) = 0;
     virtual void setPixel(int x, int y, std::vector<T> pixel) = 0;
@@ -18,9 +18,9 @@ public:
 };
 
 template <typename T>
-class monoImage{
+class SingleChannelImage{
 public:
-    virtual ~monoImage() = default;
+    virtual ~SingleChannelImage() = default;
     virtual Matrix<T>& getChannel() = 0;
     virtual void setChannel(const Matrix<T>& data) = 0;
     virtual void setPixel(int x, int y, T pixel) = 0;
@@ -32,13 +32,13 @@ public:
 };
 
 template <typename T>
-class imageGrayScale : public monoImage<T> {
+class GrayscaleImage : public SingleChannelImage<T> {
 private:
     ImageHeader header;
     Matrix<T>* channel;
 
 public:
-    imageGrayScale(Matrix<T>* ch, ImageHeader header): header(header), channel(ch) {};
+    GrayscaleImage(Matrix<T>* ch, ImageHeader header): header(header), channel(ch) {};
     
     Matrix<T>& getChannel() override{
         return *channel;
@@ -75,18 +75,18 @@ public:
         return this->header;
     }
 
-    ~imageGrayScale(){
+    ~GrayscaleImage(){
         delete channel;
     }
 };
 
 template <typename T>
-class imageRGB : public multiImage<T> {
+class ImageRGB : public MultiChannelImage<T> {
 private:
     ImageHeader header;
     std::vector<Matrix<T>*> channels;
 public:
-    imageRGB(std::vector<Matrix<T>*> ch, ImageHeader header): header(header), channels(ch) {}
+    ImageRGB(std::vector<Matrix<T>*> ch, ImageHeader header): header(header), channels(ch) {}
         
     Matrix<T>& getChannel(int chNum) override{
         return *channels[chNum];
@@ -137,26 +137,10 @@ public:
         return this->header;
     }
 
-    ~imageRGB(){
+    ~ImageRGB(){
         for(Matrix<T>* channel : channels) {
             delete channel;
         }
-    }
-};
-
-template <typename T>
-class multiChannelImage {
-public:
-    multiImage<T>* createImage( std::vector<Matrix<T>*> ch, ImageHeader header){
-        return new imageRGB<T>(ch, header);
-    }
-};
-
-template <typename T>
-class monoChannelImage {
-public:
-    monoImage<T>* createImage( Matrix<T>* ch, ImageHeader header){
-        return new imageGrayScale<T>(ch, header);
     }
 };
 

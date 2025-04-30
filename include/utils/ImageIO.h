@@ -97,12 +97,19 @@ namespace ImageIO {
         for (int i = 0; i < header.numChannels; ++i) {
             channels[i] = new Matrix<T>(header.height, header.width);
         }
-        size_t idx = 0;
+        size_t idx;
+        for (int c = 0; c < header.numChannels; ++c) {
+            idx = c;
+            for (int y = 0; y < header.height; ++y) {
+                for (int x = 0; x < header.width; ++x) {
+                    (*channels[c])(x, y) = imgBuffer[idx];
+                    idx += header.numChannels;
+                }
+            }
+        }
         for (int y = 0; y < header.height; ++y) {
             for (int x = 0; x < header.width; ++x) {
-                for (int c = 0; c < header.numChannels; ++c) {
-                    (*channels[c])(x, y) = imgBuffer[idx++];
-                }
+                
             }
         }
         MultiChannelImage<T>* img = new ImageRGB<T>(channels, header);

@@ -30,7 +30,6 @@ namespace Convolution {
             // Process inner pixels - using row-major order
             for(int row = kernelRadius; row < chRows - kernelRadius; ++row) {
                 for(int col = kernelRadius; col < chCols - kernelRadius; ++col) {
-
                     // Apply kernel - match image orientation
                     for(int krow = -kernelRadius; krow <= kernelRadius; ++krow) {
                         for(int kcol = -kernelRadius; kcol <= kernelRadius; ++kcol) {

@@ -18,7 +18,8 @@ protected:
         for (int i = 0; i < header.width * header.height * header.numChannels; ++i) {
             imgBuffer[i] = static_cast<unsigned char>(i);
         }
-        image = new GrayscaleImage<unsigned char>(new Matrix<unsigned char>(imgBuffer, header.width, header.height), header);
+        std::unique_ptr<Matrix<unsigned char>> channel = std::make_unique<Matrix<unsigned char>>(imgBuffer, header.height, header.width);
+        image = new GrayscaleImage<unsigned char>(std::move(channel), header);
     }
 
      void TearDown() {

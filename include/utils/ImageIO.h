@@ -55,14 +55,14 @@ namespace ImageIO {
         file.close();
 
         // Crea immagine
-        Matrix<T>* channel = new Matrix<T>(header.height, header.width);
+        std::unique_ptr<Matrix<T>> channel = std::make_unique<Matrix<T>>(header.height, header.width);
         size_t idx = 0;
         for (int y = 0; y < header.height; ++y) {
             for (int x = 0; x < header.width; ++x) {
                 (*channel)(x, y) = imgBuffer[idx++];
             }
         }
-        SingleChannelImage<T>* img = new GrayscaleImage<T>(channel, header);
+        SingleChannelImage<T>* img = new GrayscaleImage<T>(std::move(channel), header);
         detail::safeDeleteBuffer(imgBuffer);
         return img;
     }
@@ -93,9 +93,9 @@ namespace ImageIO {
         }
 
         // Crea immagine
-        std::vector<Matrix<T>*> channels(header.numChannels);
+        std::vector<std::unique_ptr<Matrix<T>>> channels(header.numChannels);
         for (int i = 0; i < header.numChannels; ++i) {
-            channels[i] = new Matrix<T>(header.height, header.width);
+            channels[i] = std::make_unique<Matrix<T>>(header.height, header.width);
         }
         size_t idx;
         for (int c = 0; c < header.numChannels; ++c) {
@@ -112,7 +112,7 @@ namespace ImageIO {
                 
             }
         }
-        MultiChannelImage<T>* img = new ImageRGB<T>(channels, header);
+        MultiChannelImage<T>* img = new ImageRGB<T>(std::move(channels), header);
         detail::safeDeleteBuffer(imgBuffer);
         return img;
     }

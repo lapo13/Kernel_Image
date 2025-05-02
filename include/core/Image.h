@@ -35,10 +35,11 @@ template <typename T>
 class GrayscaleImage : public SingleChannelImage<T> {
 private:
     ImageHeader header;
-    Matrix<T>* channel;
+    std::unique_ptr<Matrix<T>> channel;
 
 public:
-    GrayscaleImage(Matrix<T>* ch, ImageHeader header): header(header), channel(ch) {};
+    GrayscaleImage(std::unique_ptr<Matrix<T>> ch, ImageHeader header)
+        : header(header), channel(std::move(ch)) {}
     
     Matrix<T>& getChannel() override{
         return *channel;
@@ -75,18 +76,16 @@ public:
         return this->header;
     }
 
-    ~GrayscaleImage(){
-        delete channel;
-    }
+    ~GrayscaleImage() override = default;
 };
 
 template <typename T>
 class ImageRGB : public MultiChannelImage<T> {
 private:
     ImageHeader header;
-    std::vector<Matrix<T>*> channels;
+    std::vector<std::unique_ptr<Matrix<T>>> channels;
 public:
-    ImageRGB(std::vector<Matrix<T>*> ch, ImageHeader header): header(header), channels(ch) {}
+    ImageRGB(std::vector<std::unique_ptr<Matrix<T>>> ch, ImageHeader header): header(header), channels(std::move(ch)) {}
         
     Matrix<T>& getChannel(int chNum) override{
         return *channels[chNum];
@@ -137,11 +136,7 @@ public:
         return this->header;
     }
 
-    ~ImageRGB(){
-        for(Matrix<T>* channel : channels) {
-            delete channel;
-        }
-    }
+    ~ImageRGB() override = default;
 };
 
 #endif //IMAGE_H

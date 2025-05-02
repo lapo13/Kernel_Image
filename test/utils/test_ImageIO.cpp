@@ -21,9 +21,9 @@ protected:
             imgBuffer[i] = static_cast<unsigned char>(i);
         }
         // Create a MultiChannelImage object
-        std::vector<Matrix<unsigned char>*> channels(header.numChannels);
+        std::vector<std::unique_ptr<Matrix<unsigned char>>> channels(header.numChannels);
         for (int i = 0; i < header.numChannels; ++i) {
-            channels[i] = new Matrix<unsigned char>(header.height, header.width);
+            channels[i] = std::make_unique<Matrix<unsigned char>>(header.height, header.width);
         }
         size_t idx = 0;
         for (int y = 0; y < header.height; ++y) {
@@ -33,7 +33,7 @@ protected:
                 }
             }
         }
-        image = new ImageRGB<unsigned char>(channels, header);
+        image = new ImageRGB<unsigned char>(std::move(channels), header);
         delete[] imgBuffer;
         imgBuffer = nullptr;
 
@@ -48,13 +48,13 @@ protected:
             imgBuffer[i] = static_cast<unsigned char>(i);
         }
         // Create a SingleChannelImage object
-        Matrix<unsigned char>* channel = new Matrix<unsigned char>(header2.height, header2.width);
+        std::unique_ptr<Matrix<unsigned char>> channel = std::make_unique<Matrix<unsigned char>>(header2.height, header2.width);
         for (int y = 0; y < header2.height; ++y) {
             for (int x = 0; x < header2.width; ++x) {
                 (*channel)(x, y) = imgBuffer[y * header2.width + x];
             }
         }
-        image2 = new GrayscaleImage<unsigned char>(channel, header2);
+        image2 = new GrayscaleImage<unsigned char>(std::move(channel), header2);
         delete[] imgBuffer;
         imgBuffer = nullptr;        
     }

@@ -20,9 +20,9 @@ protected:
                imgBuffer[i] = static_cast<unsigned char>(i);
           }
           // Create a MultiChannelImage object
-          std::vector<Matrix<unsigned char>*> channels(header.numChannels);
+          std::vector<std::unique_ptr<Matrix<unsigned char>>> channels(header.numChannels);
           for (int i = 0; i < header.numChannels; ++i) {
-               channels[i] = new Matrix<unsigned char>(header.height, header.width);
+               channels[i] = std::make_unique<Matrix<unsigned char>>(header.height, header.width);
           }
           size_t idx = 0;
           for (int y = 0; y < header.height; ++y) {
@@ -32,7 +32,7 @@ protected:
                     }
                }
           }
-          image = new ImageRGB<unsigned char>(channels, header);
+          image = new ImageRGB<unsigned char>(std::move(channels), header);
       }
      void TearDown() {
           delete[] imgBuffer;
